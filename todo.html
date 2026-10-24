@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>열공 퀘스트 - 공부 타이머 & 캐릭터 성장</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        :root {
+            --bg-color: #f0f3f8;
+            --card-bg: #ffffff;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #f59e0b;
+            --streak-fire: #ef4444;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            --radius: 20px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* 스트릭 배지 헤더 */
+        .header-streak-bar {
+            background: linear-gradient(135deg, #fef2f2, #fff7ed);
+            border: 1px solid #fee2e2;
+            border-radius: 16px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .streak-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .streak-fire-icon {
+            font-size: 1.8rem;
+            animation: pulse-fire 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse-fire {
+            0% { transform: scale(1); filter: drop-shadow(0 0 2px #ef4444); }
+            100% { transform: scale(1.15); filter: drop-shadow(0 0 8px #f97316); }
+        }
+
+        .streak-count-text {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #991b1b;
+        }
+
+        .streak-subtext {
+            font-size: 0.75rem;
+            color: #b91c1c;
+        }
+
+        /* 캐릭터 상태 카드 */
+        .character-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #e0e7ff;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .avatar-container {
+            width: 120px;
+            height: 120px;
+            margin: 10px auto 16px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .avatar-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+
+        .avatar-container.studying .avatar-svg {
+            animation: bounce 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        .char-title {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .char-name {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        /* 경험치 바 */
+        .exp-container {
+            margin-top: 10px;
+        }
+
+        .exp-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .exp-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .exp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            width: 0%;
+            transition: width 0.5s ease-out;
+            border-radius: 6px;
+        }
+
+        /* 타이머 카드 */
+        .timer-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-modes {
+            display: flex;
+            gap: 8px;
+            background: #f3f4f6;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 8px 0;
+            border: none;
+            background: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .timer-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            font-variant-numeric: tabular-nums;
+            margin: 10px 0;
+            letter-spacing: -1px;
+        }
+
+        /* 타이머 조작 버튼 */
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        /* 목표 설정 영역 */
+        .time-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .time-option {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .time-option.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #eeeffe;
+        }
+
+        /* 통계 영역 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* 일일 퀘스트 섹션 */
+        .quest-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .quest-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quest-item {
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .quest-item.completed {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .quest-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .quest-item-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .quest-item-progress {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .quest-claim-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quest-claim-btn:disabled {
+            background: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .quest-claim-btn.done {
+            background: #22c55e;
+            color: white;
+        }
+
+        /* 카드 도감 영역 */
+        .collection-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-top: 10px;
+        }
+
+        .collection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .collection-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .collection-count {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: #eeeffe;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .collect-card {
+            background: #f9fafb;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .collect-card.unlocked {
+            border-color: #a5b4fc;
+            background: linear-gradient(135deg, #ffffff, #f3f4f6);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .collect-card.locked {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+
+        .collect-card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 6px;
+        }
+
+        .collect-card-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .collect-card-req {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .collect-card.unlocked .collect-card-req {
+            color: var(--primary);
+        }
+
+        /* 카드 상세보기 모달 */
+        .card-detail-img {
+            font-size: 4.5rem;
+            margin: 10px 0;
+        }
+
+        .card-detail-rarity {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        /* 축하 메시지 팝업 모달 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            max-width: 320px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 🔥 스트릭 상태 표시 바 -->
+        <div class="header-streak-bar">
+            <div class="streak-info">
+                <div class="streak-fire-icon">🔥</div>
+                <div>
+                    <div class="streak-count-text" id="streakCount">0일 연속 공부 중!</div>
+                    <div class="streak-subtext" id="streakSubtext">오늘 공부를 완료하고 스트릭을 이어가세요!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 캐릭터 카드 -->
+        <div class="character-card">
+            <div class="level-badge" id="levelBadge">Lv. 1</div>
+            
+            <div class="avatar-container" id="avatarContainer">
+                <!-- SVG 캐릭터 -->
+                <svg class="avatar-svg" id="avatarSvg" viewBox="0 0 100 100">
+                    <!-- 배경 후광 -->
+                    <circle cx="50" cy="50" r="45" fill="#EEF2FF" />
+                    <!-- 모자 (학사모/초보자 캡) -->
+                    <path id="hat" d="M 25 35 L 50 20 L 75 35 L 50 45 Z" fill="#4F46E5" />
+                    <rect id="hatBase" x="38" y="35" width="24" height="8" rx="2" fill="#3730A3" />
+                    <!-- 얼굴 -->
+                    <circle cx="50" cy="55" r="22" fill="#FDE68A" />
+                    <!-- 눈 (표정 dynamic 변경 가능) -->
+                    <circle id="eyeLeft" cx="42" cy="52" r="2.5" fill="#1F2937" />
+                    <circle id="eyeRight" cx="58" cy="52" r="2.5" fill="#1F2937" />
+                    <!-- 볼터치 -->
+                    <circle cx="38" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
+                    <circle cx="62" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
+                    <!-- 입 -->
+                    <path id="mouth" d="M 45 62 Q 50 67 55 62" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round" />
+                    <!-- 안경 (레벨에 따라 고레벨시 추가) -->
+                    <g id="glasses" style="display:none;">
+                        <circle cx="42" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
+                        <circle cx="58" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
+                        <line x1="48" y1="52" x2="52" y2="52" stroke="#1F2937" stroke-width="1.5" />
+                    </g>
+                </svg>
+            </div>
+
+            <div class="char-title" id="charTitle">초보 탐구자</div>
+            <div class="char-name" id="charName">열공이</div>
+
+            <!-- 경험치 바 -->
+            <div class="exp-container">
+                <div class="exp-info">
+                    <span>EXP</span>
+                    <span id="expText">0 / 100</span>
+                </div>
+                <div class="exp-bar-bg">
+                    <div class="exp-bar-fill" id="expBarFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 타이머 카드 -->
+        <div class="timer-card">
+            <!-- 모드 선택 -->
+            <div class="timer-modes">
+                <button class="mode-btn active" data-mode="target">목표 타이머</button>
+                <button class="mode-btn" data-mode="stopwatch">스톱워치</button>
+            </div>
+
+            <!-- 목표 시간 선택 버튼 (목표 모드일 때만 유효) -->
+            <div class="time-selector" id="timeSelector">
+                <button class="time-option" data-time="10">10분</button>
+                <button class="time-option active" data-time="25">25분</button>
+                <button class="time-option" data-time="50">50분</button>
+                <button class="time-option" data-time="60">60분</button>
+            </div>
+
+            <!-- 시계 디스플레이 -->
+            <div class="timer-display" id="timerDisplay">25:00</div>
+
+            <!-- 컨트롤 버튼 -->
+            <div class="timer-controls">
+                <button class="btn btn-primary" id="btnStart">공부 시작</button>
+                <button class="btn btn-secondary" id="btnReset">리셋</button>
+            </div>
+        </div>
+
+        <!-- 누적 통계 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">오늘 공부 시간</div>
+                <div class="stat-value" id="todayTime">0분</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">총 획득 경험치</div>
+                <div class="stat-value" id="totalExp">0 XP</div>
+            </div>
+        </div>
+
+        <!-- 🏆 일일 퀘스트 카드 -->
+        <div class="quest-card">
+            <div class="quest-header">
+                <div class="quest-title">🏆 일일 퀘스트</div>
+                <div class="quest-subtext" style="font-size: 0.75rem; color: var(--text-muted);">매일 자정 리셋</div>
+            </div>
+            <div class="quest-list" id="questList">
+                <!-- 자바스크립트로 동적 생성됩니다 -->
+            </div>
+        </div>
+
+        <!-- 캐릭터 카드 도감 -->
+        <div class="collection-card">
+            <div class="collection-header">
+                <div class="collection-title">🃏 캐릭터 카드 도감</div>
+                <div class="collection-count" id="collectionCount">0 / 6</div>
+            </div>
+            <div class="card-grid" id="cardGrid">
+                <!-- 자바스크립트로 카드가 동적 생성됩니다 -->
+            </div>
+        </div>
+
+        <footer>
+            데이터는 이 브라우저에 자동으로 저장됩니다.
+        </footer>
+    </div>
+
+    <!-- 결과/레벨업 모달 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-icon" id="modalIcon">🎉</div>
+            <div class="modal-title" id="modalTitle">공부 성공!</div>
+            <div class="modal-desc" id="modalDesc">25분간 집중하여 250 XP를 획득했습니다!</div>
+            <button class="btn btn-primary" id="modalCloseBtn">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 상태 관리 ---
+        let state = {
+            level: 1,
+            currentExp: 0,
+            maxExp: 100,
+            totalExp: 0,
+            todayMinutes: 0,
+            unlockedCards: [1], // 기본 제공 1번 카드
+            
+            // 스트릭 관련
+            streak: 0,
+            lastStudyDate: null, // 'YYYY-MM-DD'
+            
+            // 일일 퀘스트 상태 (오늘 날짜 및 각 퀘스트 클리어/보상 수령 여부)
+            questDate: null,
+            completedSessionsToday: 0,
+            quests: [
+                { id: 1, title: "출석 체크! 공부 1회 시작하기", target: 1, type: "session", reward: 20, claimed: false },
+                { id: 2, title: "오늘 50분 이상 집중하기", target: 50, type: "minutes", reward: 50, claimed: false },
+                { id: 3, title: "열공 파이터! 3회 세션 완료", target: 3, type: "session", reward: 40, claimed: false }
+            ],
+
+            // 타이머 상태
+            mode: 'target', // 'target' 또는 'stopwatch'
+            selectedMinutes: 25,
+            secondsLeft: 25 * 60,
+            elapsedSeconds: 0,
+            isRunning: false
+        };
+
+        let timerInterval = null;
+
+        // 수집 가능한 캐릭터 카드 데이터
+        const cardsData = [
+            { id: 1, name: "병아리 탐구자", icon: "🐣", req: "기본 지급", rarity: "NORMAL", color: "#6b7280", desc: "공부의 세계로 첫발을 내딛은 귀여운 탐구자입니다." },
+            { id: 2, name: "열공의 도서관원", icon: "📚", req: "Lv. 3 달성", rarity: "RARE", color: "#3b82f6", desc: "책의 향기를 좋아하며 집중력이 높아지기 시작했습니다." },
+            { id: 3, name: "불꽃의 마법사", icon: "🔥", req: "Lv. 5 달성", rarity: "EPIC", color: "#8b5cf6", desc: "열정의 불꽃으로 공부에 엄청난 몰입을 발휘합니다." },
+            { id: 4, name: "몰입의 기사", icon: "🛡️", req: "총 100분 달성", rarity: "RARE", color: "#3b82f6", desc: "스마트폰의 유혹으로부터 공부 시간을 완벽히 지켜냅니다." },
+            { id: 5, name: "시간의 지배자", icon: "⏳", req: "총 300분 달성", rarity: "EPIC", color: "#8b5cf6", desc: "시간을 자유자재로 다루며 최고의 효율로 공부합니다." },
+            { id: 6, name: "전설의 학자", icon: "👑", req: "Lv. 10 달성", rarity: "LEGENDARY", color: "#f59e0b", desc: "모든 지식을 통달한 스터디의 신으로 불립니다." }
+        ];
+
+        // --- DOM 요소 ---
+        const streakCount = document.getElementById('streakCount');
+        const streakSubtext = document.getElementById('streakSubtext');
+        
+        const levelBadge = document.getElementById('levelBadge');
+        const charTitle = document.getElementById('charTitle');
+        const charName = document.getElementById('charName');
+        const expText = document.getElementById('expText');
+        const expBarFill = document.getElementById('expBarFill');
+        const avatarContainer = document.getElementById('avatarContainer');
+        const glasses = document.getElementById('glasses');
+        const hat = document.getElementById('hat');
+
+        const modeBtns = document.querySelectorAll('.mode-btn');
+        const timeSelector = document.getElementById('timeSelector');
+        const timeOptions = document.querySelectorAll('.time-option');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const btnStart = document.getElementById('btnStart');
+        const btnReset = document.getElementById('btnReset');
+
+        const todayTimeEl = document.getElementById('todayTime');
+        const totalExpEl = document.getElementById('totalExp');
+        const questList = document.getElementById('questList');
+        const cardGrid = document.getElementById('cardGrid');
+        const collectionCount = document.getElementById('collectionCount');
+
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        // 칭호 목록 (레벨별)
+        const titles = [
+            '초보 탐구자',
+            '집중하는 학생',
+            '열정의 학도',
+            '지식의 스폰지',
+            '몰입의 마법사',
+            '학문의 대가',
+            '전설의 현자'
+        ];
+
+        // 오늘의 날짜 구하기 (YYYY-MM-DD)
+        function getTodayString() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // 전체 퀘스트 풀 (랜덤 3개 선택용)
+        const questPool = [
+            { id: 'q1', title: "출석 체크! 공부 1회 시작하기", target: 1, type: "session", reward: 20 },
+            { id: 'q2', title: "몰입 모드! 25분 이상 집중하기", target: 25, type: "minutes", reward: 30 },
+            { id: 'q3', title: "오늘 50분 이상 열공 달성", target: 50, type: "minutes", reward: 50 },
+            { id: 'q4', title: "오늘 90분 마라톤 공부 달성", target: 90, type: "minutes", reward: 80 },
+            { id: 'q5', title: "열공 파이터! 2회 세션 완료", target: 2, type: "session", reward: 30 },
+            { id: 'q6', title: "지식 탐험가! 3회 세션 완료", target: 3, type: "session", reward: 50 },
+            { id: 'q7', title: "초집중 플레이어! 4회 세션 완료", target: 4, type: "session", reward: 70 }
+        ];
+
+        // 날짜 시드를 활용한 결정론적 랜덤 퀘스트 생성 (같은 날에는 항상 같은 3개 부여)
+        function generateDailyQuests(dateStr) {
+            let hash = 0;
+            for (let i = 0; i < dateStr.length; i++) {
+                hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            
+            const shuffled = [...questPool].sort((a, b) => {
+                const valA = Math.sin(hash + a.reward) * 10000;
+                const valB = Math.sin(hash + b.reward) * 10000;
+                return (valA - Math.floor(valA)) - (valB - Math.floor(valB));
+            });
+
+            return shuffled.slice(0, 3).map(q => ({ ...q, claimed: false }));
+        }
+
+        // --- 데이터 저장 및 로드 ---
+        function loadData() {
+            const saved = localStorage.getItem('study_quest_data');
+            const todayStr = getTodayString();
+
+            if (saved) {
+                const data = JSON.parse(saved);
+                state.level = data.level || 1;
+                state.currentExp = data.currentExp || 0;
+                state.maxExp = calculateMaxExp(state.level);
+                state.totalExp = data.totalExp || 0;
+                state.unlockedCards = data.unlockedCards || [1];
+                
+                // 스트릭 초기화 검사
+                state.streak = data.streak || 0;
+                state.lastStudyDate = data.lastStudyDate || null;
+                checkStreakReset(todayStr);
+
+                // 일일 퀘스트 및 하루 공부시간 초기화 처리
+                if (data.questDate === todayStr && data.quests && data.quests.length > 0) {
+                    state.todayMinutes = data.todayMinutes || 0;
+                    state.completedSessionsToday = data.completedSessionsToday || 0;
+                    state.quests = data.quests;
+                    state.questDate = todayStr;
+                } else {
+                    // 날짜가 바뀌었으므로 일일 데이터 리셋 및 랜덤 퀘스트 새로 생성
+                    state.todayMinutes = 0;
+                    state.completedSessionsToday = 0;
+                    state.questDate = todayStr;
+                    state.quests = generateDailyQuests(todayStr);
+                }
+            } else {
+                state.questDate = todayStr;
+                state.quests = generateDailyQuests(todayStr);
+            }
+
+            updateStreakUI();
+            updateCharacterUI();
+            updateStatsUI();
+            renderQuests();
+            checkCardUnlocks();
+            renderCards();
+            resetTimer();
+        }
+
+        function saveData() {
+            const dataToSave = {
+                level: state.level,
+                currentExp: state.currentExp,
+                totalExp: state.totalExp,
+                todayMinutes: state.todayMinutes,
+                unlockedCards: state.unlockedCards,
+                streak: state.streak,
+                lastStudyDate: state.lastStudyDate,
+                questDate: state.questDate,
+                completedSessionsToday: state.completedSessionsToday,
+                quests: state.quests
+            };
+            localStorage.setItem('study_quest_data', JSON.stringify(dataToSave));
+        }
+
+        // 스트릭 초기화 확인 (어제도 오늘도 공부 안했으면 리셋)
+        function checkStreakReset(todayStr) {
+            if (!state.lastStudyDate) return;
+
+            const today = new Date(todayStr);
+            const lastStudy = new Date(state.lastStudyDate);
+            const diffTime = Math.abs(today - lastStudy);
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            // 하루 이상 지났으면(2일 이상 차이나면) 스트릭 0으로 초기화
+            if (diffDays > 1) {
+                state.streak = 0;
+            }
+        }
+
+        // 공부 달성 시 스트릭 갱신
+        function updateStreakOnStudy() {
+            const todayStr = getTodayString();
+            if (state.lastStudyDate === todayStr) return; // 오늘 이미 갱신됨
+
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+
+            if (state.lastStudyDate === yesterdayStr) {
+                state.streak += 1; // 어제 공부했으면 연속 +1
+            } else {
+                state.streak = 1; // 연속이 끊겼거나 첫 공부면 1일부터 시작
+            }
+
+            state.lastStudyDate = todayStr;
+            updateStreakUI();
+        }
+
+        function updateStreakUI() {
+            streakCount.textContent = `${state.streak}일 연속 공부 중!`;
+            if (state.streak > 0) {
+                streakSubtext.textContent = `대단해요! 불꽃을 꺼뜨리지 않고 유지 중입니다.`;
+            } else {
+                streakSubtext.textContent = `오늘 공부를 완료하고 첫 불꽃을 피워보세요!`;
+            }
+        }
+
+        // 레벨에 따른 필요 경험치 계산
+        function calculateMaxExp(level) {
+            return level * 100;
+        }
+
+        // --- 캐릭터 & UI 업데이트 ---
+        function updateCharacterUI() {
+            levelBadge.textContent = `Lv. ${state.level}`;
+            
+            // 칭호 결정
+            const titleIndex = Math.min(Math.floor((state.level - 1) / 2), titles.length - 1);
+            charTitle.textContent = titles[titleIndex];
+
+            // 경험치 바
+            expText.textContent = `${state.currentExp} / ${state.maxExp} XP`;
+            const percent = Math.min(100, Math.round((state.currentExp / state.maxExp) * 100));
+            expBarFill.style.width = `${percent}%`;
+
+            // 레벨 상승 시 캐릭터 외형 변화
+            if (state.level >= 3) {
+                glasses.style.display = 'block';
+            } else {
+                glasses.style.display = 'none';
+            }
+
+            if (state.level >= 5) {
+                hat.setAttribute('fill', '#EAB308');
+            } else {
+                hat.setAttribute('fill', '#4F46E5');
+            }
+        }
+
+        function updateStatsUI() {
+            todayTimeEl.textContent = `${state.todayMinutes}분`;
+            totalExpEl.textContent = `${state.totalExp} XP`;
+        }
+
+        // --- 🏆 일일 퀘스트 렌더링 및 처리 ---
+        function renderQuests() {
+            questList.innerHTML = '';
+
+            state.quests.forEach(quest => {
+                let currentVal = 0;
+                if (quest.type === 'session') currentVal = state.completedSessionsToday;
+                if (quest.type === 'minutes') currentVal = state.todayMinutes;
+
+                const isReady = currentVal >= quest.target;
+                const isClaimed = quest.claimed;
+
+                const itemEl = document.createElement('div');
+                itemEl.className = `quest-item ${isClaimed ? 'completed' : ''}`;
+                itemEl.innerHTML = `
+                    <div class="quest-item-info">
+                        <div class="quest-item-title">${quest.title}</div>
+                        <div class="quest-item-progress">${Math.min(currentVal, quest.target)} / ${quest.target} (${quest.reward} XP)</div>
+                    </div>
+                    <button class="quest-claim-btn ${isClaimed ? 'done' : ''}" 
+                            ${(!isReady || isClaimed) ? 'disabled' : ''} 
+                            data-id="${quest.id}">
+                        ${isClaimed ? '완료됨' : (isReady ? '보상 받기' : '진행 중')}
+                    </button>
+                `;
+
+                const btn = itemEl.querySelector('.quest-claim-btn');
+                if (isReady && !isClaimed) {
+                    btn.addEventListener('click', () => claimQuestReward(quest.id));
+                }
+
+                questList.appendChild(itemEl);
+            });
+        }
+
+        function claimQuestReward(questId) {
+            const quest = state.quests.find(q => q.id === questId);
+            if (!quest || quest.claimed) return;
+
+            quest.claimed = true;
+            state.totalExp += quest.reward;
+            let leveledUp = addExp(quest.reward);
+            let newlyUnlockedCards = checkCardUnlocks();
+
+            saveData();
+            renderQuests();
+            updateStatsUI();
+            renderCards();
+
+            if (newlyUnlockedCards.length > 0) {
+                const card = newlyUnlockedCards[0];
+                showModal('🃏 새 카드 획득!', `[${card.name}] 카드를 수집했습니다!`, card.icon);
+            } else if (leveledUp) {
+                showModal('🎊 레벨 업!', `퀘스트 보상으로 Lv. ${state.level}로 성장했습니다!`, '⭐');
+            } else {
+                showModal('🏆 퀘스트 완료!', `${quest.reward} XP 보상을 획득했습니다!`, '🎁');
+            }
+        }
+
+        // --- 카드 도감 관리 ---
+        function checkCardUnlocks() {
+            let newlyUnlocked = [];
+
+            cardsData.forEach(card => {
+                if (!state.unlockedCards.includes(card.id)) {
+                    let unlock = false;
+                    if (card.id === 2 && state.level >= 3) unlock = true;
+                    if (card.id === 3 && state.level >= 5) unlock = true;
+                    if (card.id === 4 && state.todayMinutes >= 100) unlock = true;
+                    if (card.id === 5 && state.todayMinutes >= 300) unlock = true;
+                    if (card.id === 6 && state.level >= 10) unlock = true;
+
+                    if (unlock) {
+                        state.unlockedCards.push(card.id);
+                        newlyUnlocked.push(card);
+                    }
+                }
+            });
+
+            return newlyUnlocked;
+        }
+
+        function renderCards() {
+            cardGrid.innerHTML = '';
+            let unlockedCount = 0;
+
+            cardsData.forEach(card => {
+                const isUnlocked = state.unlockedCards.includes(card.id);
+                if (isUnlocked) unlockedCount++;
+
+                const cardEl = document.createElement('div');
+                cardEl.className = `collect-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                cardEl.innerHTML = `
+                    <div class="collect-card-icon">${isUnlocked ? card.icon : '🔒'}</div>
+                    <div class="collect-card-name">${card.name}</div>
+                    <div class="collect-card-req">${isUnlocked ? card.rarity : card.req}</div>
+                `;
+
+                cardEl.addEventListener('click', () => {
+                    if (isUnlocked) {
+                        showModal(card.name, `<span class="card-detail-rarity" style="background:${card.color};color:white;">${card.rarity}</span><br>${card.desc}`, card.icon);
+                    } else {
+                        showModal("잠긴 카드", `해금 조건: ${card.req}`, "🔒");
+                    }
+                });
+
+                cardGrid.appendChild(cardEl);
+            });
+
+            collectionCount.textContent = `${unlockedCount} / ${cardsData.length}`;
+        }
+
+        function updateTimerDisplay() {
+            let totalSec = state.mode === 'target' ? state.secondsLeft : state.elapsedSeconds;
+            const mins = Math.floor(totalSec / 60);
+            const secs = totalSec % 60;
+            timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // --- 타이머 로직 ---
+        function startTimer() {
+            if (state.isRunning) {
+                // 일시정지
+                clearInterval(timerInterval);
+                state.isRunning = false;
+                btnStart.textContent = '계속하기';
+                avatarContainer.classList.remove('studying');
+                return;
+            }
+
+            state.isRunning = true;
+            btnStart.textContent = '일시정지';
+            avatarContainer.classList.add('studying');
+
+            timerInterval = setInterval(() => {
+                if (state.mode === 'target') {
+                    state.secondsLeft--;
+                    updateTimerDisplay();
+
+                    if (state.secondsLeft <= 0) {
+                        completeStudySession(state.selectedMinutes);
+                    }
+                } else {
+                    state.elapsedSeconds++;
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            state.isRunning = false;
+            avatarContainer.classList.remove('studying');
+            btnStart.textContent = '공부 시작';
+
+            if (state.mode === 'target') {
+                state.secondsLeft = state.selectedMinutes * 60;
+            } else {
+                if (state.elapsedSeconds >= 60) {
+                    // 정확한 분 수만 계산 (초 단위 버림)
+                    const minutesWorked = Math.floor(state.elapsedSeconds / 60);
+                    completeStudySession(minutesWorked);
+                }
+                state.elapsedSeconds = 0;
+            }
+            updateTimerDisplay();
+        }
+
+        // --- 경험치 획득 및 완료 로직 ---
+        function completeStudySession(minutes) {
+            clearInterval(timerInterval);
+            state.isRunning = false;
+            avatarContainer.classList.remove('studying');
+            btnStart.textContent = '공부 시작';
+
+            // 입력받은 minutes 값을 정수로 정확하게 변환
+            const validMinutes = Math.max(1, Math.floor(Number(minutes) || 1));
+
+            // 분당 10 XP 부여 (예: 1분 = 10 XP, 25분 = 250 XP)
+            const gainedExp = validMinutes * 10;
+            state.todayMinutes += validMinutes;
+            state.completedSessionsToday += 1;
+            state.totalExp += gainedExp;
+
+            updateStreakOnStudy();
+            let leveledUp = addExp(gainedExp);
+            let newlyUnlockedCards = checkCardUnlocks();
+
+            saveData();
+            updateStatsUI();
+            renderQuests();
+            renderCards();
+
+            // 타이머 상태 초기화
+            if (state.mode === 'target') {
+                state.secondsLeft = state.selectedMinutes * 60;
+            } else {
+                state.elapsedSeconds = 0;
+            }
+            updateTimerDisplay();
+
+            // 모달 팝업 표시
+            if (newlyUnlockedCards.length > 0) {
+                const card = newlyUnlockedCards[0];
+                showModal('🃏 새 카드 획득!', `[${card.name}] 카드를 수집했습니다!\n(${card.req})`, card.icon);
+            } else if (leveledUp) {
+                showModal('🎊 레벨 업!', `축하합니다! Lv. ${state.level}로 성장했습니다!\n새로운 칭호: [${charTitle.textContent}]`, '⭐');
+            } else {
+                showModal('공부 성공!', `${validMinutes}분간 집중하여 ${gainedExp} XP를 획득했습니다!`, '🎯');
+            }
+        }
+
+        function addExp(exp) {
+            state.currentExp += exp;
+            let isLevelUp = false;
+
+            while (state.currentExp >= state.maxExp) {
+                state.currentExp -= state.maxExp;
+                state.level++;
+                state.maxExp = calculateMaxExp(state.level);
+                isLevelUp = true;
+            }
+
+            updateCharacterUI();
+            return isLevelUp;
+        }
+
+        function showModal(title, desc, icon) {
+            modalTitle.textContent = title;
+            modalDesc.innerText = desc;
+            modalIcon.textContent = icon;
+            modalOverlay.classList.add('active');
+        }
+
+        // --- 이벤트 리스너 ---
+        btnStart.addEventListener('click', startTimer);
+        btnReset.addEventListener('click', resetTimer);
+
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (state.isRunning) return;
+
+                modeBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                state.mode = e.target.dataset.mode;
+                if (state.mode === 'stopwatch') {
+                    timeSelector.style.display = 'none';
+                } else {
+                    timeSelector.style.display = 'flex';
+                }
+                resetTimer();
+            });
+        });
+
+        timeOptions.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                if (state.isRunning) return;
+
+                timeOptions.forEach(o => o.classList.remove('active'));
+                e.target.classList.add('active');
+
+                state.selectedMinutes = parseInt(e.target.dataset.time);
+                resetTimer();
+            });
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+
+        // 초기화
+        loadData();
+    </script>
+</body>
+</html>
