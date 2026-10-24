@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>열공 퀘스트 - 공부 타이머 & 캐릭터 성장</title>
+    <title>오늘 할 일</title>
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -12,710 +24,353 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
-        :root {
-            --bg-color: #f0f3f8;
-            --card-bg: #ffffff;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --accent: #f59e0b;
-            --streak-fire: #ef4444;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-            --radius: 20px;
-        }
-
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg);
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 20px 16px;
+            padding: 24px 16px;
         }
 
         .container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
         }
 
-        /* 계정 상단바 */
-        .account-bar {
+        /* 헤더 날짜 & 프로필 */
+        .header-card {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 12px 18px;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .user-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow);
-            font-size: 0.85rem;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border);
+        }
+
+        .user-name {
+            font-size: 0.95rem;
             font-weight: 700;
         }
 
-        .account-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary);
-        }
-
         .btn-logout {
-            background: #f3f4f6;
+            background: #f1f5f9;
             color: var(--text-muted);
             border: none;
             padding: 6px 12px;
             border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .btn-logout:hover {
-            background: #e5e7eb;
+            background: #e2e8f0;
             color: var(--text-main);
         }
 
-        /* 로그인 모달 */
-        .auth-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 28px 24px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-
-        .auth-title {
-            font-size: 1.4rem;
+        .date-title {
+            font-size: 1.25rem;
             font-weight: 800;
-            margin-bottom: 6px;
             color: var(--text-main);
+            margin-bottom: 12px;
         }
 
-        .auth-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .auth-form {
+        /* 진행도 바 */
+        .progress-header {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .input-group {
-            text-align: left;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.75rem;
+            justify-content: space-between;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        .auth-input {
+        .progress-bar-bg {
             width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* 입력 폼 */
+        .input-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
             padding: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .todo-input {
+            flex: 1;
             border: 1px solid var(--border);
             border-radius: 10px;
+            padding: 12px 14px;
             font-size: 0.95rem;
             outline: none;
             transition: border-color 0.2s;
         }
 
-        .auth-input:focus {
+        .todo-input:focus {
             border-color: var(--primary);
         }
 
-        .auth-btn {
+        .btn-add {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 14px;
+            padding: 0 20px;
             border-radius: 10px;
-            font-size: 1rem;
             font-weight: 700;
+            font-size: 0.95rem;
             cursor: pointer;
-            margin-top: 8px;
             transition: background 0.2s;
+            white-space: nowrap;
         }
 
-        .auth-btn:hover {
+        .btn-add:hover {
             background: var(--primary-hover);
         }
 
-        .auth-btn:disabled {
-            background: #a5b4fc;
-            cursor: not-allowed;
-        }
-
-        .auth-toggle {
-            margin-top: 14px;
+        /* 저장 상태 및 모드 안내 */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 0.8rem;
             color: var(--text-muted);
+            padding: 0 4px;
         }
 
-        .auth-toggle-btn {
+        .save-indicator {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-clear-completed {
             background: none;
             border: none;
-            color: var(--primary);
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: underline;
-            margin-left: 4px;
-        }
-
-        .auth-error {
             color: #ef4444;
             font-size: 0.8rem;
-            margin-top: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-clear-completed:hover {
+            text-decoration: underline;
+        }
+
+        /* 할 일 목록 */
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .todo-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: transform 0.1s, border-color 0.2s;
+        }
+
+        .todo-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .todo-card.completed .checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox::after {
+            content: "✓";
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
             display: none;
         }
 
-        /* 스트릭 배지 헤더 */
-        .header-streak-bar {
-            background: linear-gradient(135deg, #fef2f2, #fff7ed);
-            border: 1px solid #fee2e2;
-            border-radius: 16px;
-            padding: 12px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow);
+        .todo-card.completed .checkbox::after {
+            display: block;
         }
 
-        .streak-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .todo-text {
+            font-size: 0.95rem;
+            word-break: break-all;
+            transition: color 0.2s;
         }
 
-        .streak-fire-icon {
-            font-size: 1.8rem;
-            animation: pulse-fire 1.5s infinite alternate ease-in-out;
+        .todo-card.completed .todo-text {
+            text-decoration: line-through;
+            color: #94a3b8;
         }
 
-        @keyframes pulse-fire {
-            0% { transform: scale(1); filter: drop-shadow(0 0 2px #ef4444); }
-            100% { transform: scale(1.15); filter: drop-shadow(0 0 8px #f97316); }
-        }
-
-        .streak-count-text {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #991b1b;
-        }
-
-        .streak-subtext {
-            font-size: 0.75rem;
-            color: #b91c1c;
-        }
-
-        /* 캐릭터 상태 카드 */
-        .character-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .level-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: #e0e7ff;
-            color: var(--primary);
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
-        .avatar-container {
-            width: 120px;
-            height: 120px;
-            margin: 10px auto 16px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .avatar-svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-            transition: transform 0.3s ease;
-        }
-
-        .avatar-container.studying .avatar-svg {
-            animation: bounce 1.5s infinite alternate ease-in-out;
-        }
-
-        @keyframes bounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-8px); }
-        }
-
-        .char-title {
-            font-size: 0.9rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .char-name {
-            font-size: 1.4rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        /* 경험치 바 */
-        .exp-container {
-            margin-top: 10px;
-        }
-
-        .exp-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .exp-bar-bg {
-            width: 100%;
-            height: 12px;
-            background: #e5e7eb;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .exp-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f59e0b, #fbbf24);
-            width: 0%;
-            transition: width 0.5s ease-out;
-            border-radius: 6px;
-        }
-
-        /* 타이머 카드 */
-        .timer-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .timer-modes {
-            display: flex;
-            gap: 8px;
-            background: #f3f4f6;
-            padding: 4px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        .mode-btn {
-            flex: 1;
-            padding: 8px 0;
-            border: none;
+        .btn-delete {
             background: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .mode-btn.active {
-            background: var(--card-bg);
-            color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .timer-display {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--text-main);
-            font-variant-numeric: tabular-nums;
-            margin: 10px 0;
-            letter-spacing: -1px;
-        }
-
-        /* 타이머 조작 버튼 */
-        .timer-controls {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 0;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.1s, background-color 0.2s;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: var(--text-main);
-        }
-
-        .btn-secondary:hover {
-            background: #d1d5db;
-        }
-
-        /* 목표 설정 영역 */
-        .time-selector {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            width: 100%;
-        }
-
-        .time-option {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .time-option.active {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: #eeeffe;
-        }
-
-        /* 통계 영역 */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
+            color: #94a3b8;
             font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-main);
+            line-height: 1;
+            padding: 4px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
         }
 
-        /* 일일 퀘스트 섹션 */
-        .quest-card {
+        .btn-delete:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
             background: var(--card-bg);
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            border: 1px dashed var(--border);
+            font-size: 0.9rem;
+        }
+
+        /* 로그인 전 화면 */
+        .login-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 40px 24px;
+            text-align: center;
             box-shadow: var(--shadow);
-        }
-
-        .quest-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-
-        .quest-title {
-            font-size: 1.05rem;
-            font-weight: 800;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .quest-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .quest-item {
-            background: #f9fafb;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
         }
 
-        .quest-item.completed {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-        }
-
-        .quest-item-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .quest-item-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .quest-item-progress {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .quest-claim-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quest-claim-btn:disabled {
-            background: #d1d5db;
-            color: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        .quest-claim-btn.done {
-            background: #22c55e;
-            color: white;
-        }
-
-        /* 카드 도감 영역 */
-        .collection-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            margin-top: 10px;
-        }
-
-        .collection-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .collection-title {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .collection-count {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--primary);
-            background: #eeeffe;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .collect-card {
-            background: #f9fafb;
-            border: 2px solid var(--border);
-            border-radius: 14px;
-            padding: 12px 8px;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .collect-card.unlocked {
-            border-color: #a5b4fc;
-            background: linear-gradient(135deg, #ffffff, #f3f4f6);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .collect-card.locked {
-            filter: grayscale(1);
-            opacity: 0.5;
-        }
-
-        .collect-card-icon {
-            font-size: 2.2rem;
-            margin-bottom: 6px;
-        }
-
-        .collect-card-name {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .collect-card-req {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .collect-card.unlocked .collect-card-req {
-            color: var(--primary);
-        }
-
-        /* 모달 오버레이 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            z-index: 100;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal {
-            background: white;
-            padding: 24px;
-            border-radius: var(--radius);
-            max-width: 320px;
-            width: 90%;
-            text-align: center;
-            transform: translateY(20px);
-            transition: transform 0.3s;
-        }
-
-        .modal-overlay.active .modal {
-            transform: translateY(0);
-        }
-
-        .modal-icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
-        }
-
-        .modal-title {
-            font-size: 1.3rem;
+        .login-title {
+            font-size: 1.4rem;
             font-weight: 800;
             margin-bottom: 8px;
         }
 
-        .modal-desc {
-            font-size: 0.9rem;
+        .login-desc {
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+        }
+
+        .btn-google {
+            background: #ffffff;
+            color: #374151;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: background 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn-google:hover {
+            background: #f8fafc;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+        }
+
+        .error-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            word-break: break-all;
+            text-align: left;
+            display: none;
+        }
+
+        .mode-banner {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            color: #b45309;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 4px;
         }
 
         footer {
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            padding: 10px 0;
-        }
-
-        /* 로딩 스피너 */
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-            gap: 12px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e0e7ff;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            padding: 12px 0;
         }
 
         .hidden {
@@ -725,899 +380,372 @@
 </head>
 <body>
 
-    <!-- 초기 로딩 화면 -->
-    <div class="loader-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <div>데이터 불러오는 중...</div>
-    </div>
-
     <div class="container">
-        <!-- 🔐 로그인/회원가입 카드 (비로그인 시 표시) -->
-        <div class="auth-card" id="authCard">
-            <div class="auth-title" id="authTitle">열공 퀘스트 시작하기</div>
-            <div class="auth-subtitle" id="authSubtitle">닉네임과 비밀번호로 로그인하여 클라우드에 저장하세요!</div>
+        <!-- 🔐 로그인 카드 (로그인 전) -->
+        <div id="loginSection" class="login-card">
+            <div class="login-title">오늘 할 일</div>
+            <div class="login-desc">구글 계정으로 로그인하여 어디서나 내 할 일 목록을 확인하세요.</div>
+            
+            <button class="btn-google" id="btnLoginGoogle">
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.259h2.908c1.702-1.567 2.684-3.874 2.684-6.617z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+                    <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                </svg>
+                구글 계정으로 로그인
+            </button>
 
-            <form class="auth-form" id="authForm" onsubmit="return false;">
-                <div class="input-group">
-                    <label class="input-label" for="usernameInput">닉네임 (아이디)</label>
-                    <input type="text" class="auth-input" id="usernameInput" placeholder="닉네임을 입력하세요" required autocomplete="username">
-                </div>
-                <div class="input-group">
-                    <label class="input-label" for="passwordInput">비밀번호</label>
-                    <input type="password" class="auth-input" id="passwordInput" placeholder="비밀번호를 입력하세요 (6자리 이상)" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="auth-btn" id="authSubmitBtn">로그인</button>
-            </form>
-
-            <div class="auth-error" id="authError"></div>
-
-            <div class="auth-toggle">
-                <span id="authToggleText">계정이 없으신가요?</span>
-                <button type="button" class="auth-toggle-btn" id="authToggleBtn">회원가입</button>
-            </div>
+            <div class="error-banner" id="authErrorBanner"></div>
         </div>
 
-        <!-- 🎮 메인 앱 화면 (로그인 후 표시) -->
-        <div id="mainApp" class="hidden" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- 계정 정보 상단바 -->
-            <div class="account-bar">
-                <div class="account-info">
-                    <span>👤</span>
-                    <span id="accountUsername">열공이</span>
-                </div>
-                <button class="btn-logout" id="btnLogout">로그아웃</button>
-            </div>
-
-            <!-- 🔥 스트릭 상태 표시 바 -->
-            <div class="header-streak-bar">
-                <div class="streak-info">
-                    <div class="streak-fire-icon">🔥</div>
-                    <div>
-                        <div class="streak-count-text" id="streakCount">0일 연속 공부 중!</div>
-                        <div class="streak-subtext" id="streakSubtext">오늘 공부를 완료하고 스트릭을 이어가세요!</div>
+        <!-- 📝 메인 할 일 앱 (로그인 후 또는 오프라인) -->
+        <div id="appSection" class="hidden" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- 날짜 & 유저 상단바 -->
+            <div class="header-card">
+                <div class="user-bar" id="userBar">
+                    <div class="user-info">
+                        <img src="" alt="프로필" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="userName">사용자</span>
                     </div>
+                    <button class="btn-logout" id="btnLogout">로그아웃</button>
+                </div>
+
+                <div class="date-title" id="dateTitle">2026년 10월 24일 토요일</div>
+
+                <div class="progress-header">
+                    <span>달성률</span>
+                    <span id="progressCount">0 / 0</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
                 </div>
             </div>
 
-            <!-- 캐릭터 카드 -->
-            <div class="character-card">
-                <div class="level-badge" id="levelBadge">Lv. 1</div>
-                
-                <div class="avatar-container" id="avatarContainer">
-                    <svg class="avatar-svg" id="avatarSvg" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" fill="#EEF2FF" />
-                        <path id="hat" d="M 25 35 L 50 20 L 75 35 L 50 45 Z" fill="#4F46E5" />
-                        <rect id="hatBase" x="38" y="35" width="24" height="8" rx="2" fill="#3730A3" />
-                        <circle cx="50" cy="55" r="22" fill="#FDE68A" />
-                        <circle id="eyeLeft" cx="42" cy="52" r="2.5" fill="#1F2937" />
-                        <circle id="eyeRight" cx="58" cy="52" r="2.5" fill="#1F2937" />
-                        <circle cx="38" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
-                        <circle cx="62" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
-                        <path id="mouth" d="M 45 62 Q 50 67 55 62" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round" />
-                        <g id="glasses" style="display:none;">
-                            <circle cx="42" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
-                            <circle cx="58" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
-                            <line x1="48" y1="52" x2="52" y2="52" stroke="#1F2937" stroke-width="1.5" />
-                        </g>
-                    </svg>
-                </div>
-
-                <div class="char-title" id="charTitle">초보 탐구자</div>
-                <div class="char-name" id="charName">열공이</div>
-
-                <!-- 경험치 바 -->
-                <div class="exp-container">
-                    <div class="exp-info">
-                        <span>EXP</span>
-                        <span id="expText">0 / 100</span>
-                    </div>
-                    <div class="exp-bar-bg">
-                        <div class="exp-bar-fill" id="expBarFill"></div>
-                    </div>
-                </div>
+            <!-- 연습 모드(로컬스토리지) 안내 깃발 -->
+            <div id="fallbackBanner" class="mode-banner hidden">
+                ⚠️ 파이어베이스 설정이 없거나 연결에 실패하여 브라우저 로컬 저장소(연습 모드)에 저장됩니다.
             </div>
 
-            <!-- 타이머 카드 -->
-            <div class="timer-card">
-                <div class="timer-modes">
-                    <button class="mode-btn active" data-mode="target">목표 타이머</button>
-                    <button class="mode-btn" data-mode="stopwatch">스톱워치</button>
-                </div>
+            <!-- 할 일 입력 폼 -->
+            <form class="input-card" id="todoForm" onsubmit="return false;">
+                <input type="text" class="todo-input" id="todoInput" placeholder="오늘 할 일을 입력하세요..." autocomplete="off">
+                <button type="submit" class="btn-add" id="btnAdd">추가</button>
+            </form>
 
-                <div class="time-selector" id="timeSelector">
-                    <button class="time-option" data-time="10">10분</button>
-                    <button class="time-option active" data-time="25">25분</button>
-                    <button class="time-option" data-time="50">50분</button>
-                    <button class="time-option" data-time="60">60분</button>
-                </div>
-
-                <div class="timer-display" id="timerDisplay">25:00</div>
-
-                <div class="timer-controls">
-                    <button class="btn btn-primary" id="btnStart">공부 시작</button>
-                    <button class="btn btn-secondary" id="btnReset">리셋</button>
-                </div>
+            <!-- 저장 상태 및 끝낸 일 정리 -->
+            <div class="status-bar">
+                <div class="save-indicator" id="saveIndicator">● 저장됨</div>
+                <button class="btn-clear-completed hidden" id="btnClearCompleted">완료한 것 치우기</button>
             </div>
 
-            <!-- 누적 통계 -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">오늘 공부 시간</div>
-                    <div class="stat-value" id="todayTime">0분</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">총 획득 경험치</div>
-                    <div class="stat-value" id="totalExp">0 XP</div>
-                </div>
-            </div>
+            <!-- 할 일 목록 -->
+            <div class="todo-list" id="todoList"></div>
 
-            <!-- 🏆 일일 퀘스트 카드 -->
-            <div class="quest-card">
-                <div class="quest-header">
-                    <div class="quest-title">🏆 일일 퀘스트</div>
-                    <div class="quest-subtext" style="font-size: 0.75rem; color: var(--text-muted);">매일 자정 리셋</div>
-                </div>
-                <div class="quest-list" id="questList">
-                </div>
-            </div>
-
-            <!-- 캐릭터 카드 도감 -->
-            <div class="collection-card">
-                <div class="collection-header">
-                    <div class="collection-title">🃏 캐릭터 카드 도감</div>
-                    <div class="collection-count" id="collectionCount">0 / 6</div>
-                </div>
-                <div class="card-grid" id="cardGrid">
-                </div>
+            <!-- 빈 상태 안내 -->
+            <div class="empty-state hidden" id="emptyState">
+                오늘 할 일이 없습니다.<br>위에서 새 항목을 추가해 보세요!
             </div>
 
             <footer>
-                ☁️ 모든 데이터는 클라우드에 안전하게 저장되어 어디서나 로그인하여 이어서 이용할 수 있습니다.
+                내 할 일은 내 계정에만 저장되고 다른 사람은 볼 수 없습니다.
             </footer>
         </div>
     </div>
 
-    <!-- 모달 -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div class="modal-icon" id="modalIcon">🎉</div>
-            <div class="modal-title" id="modalTitle">공부 성공!</div>
-            <div class="modal-desc" id="modalDesc">25분간 집중하여 250 XP를 획득했습니다!</div>
-            <button class="btn btn-primary" id="modalCloseBtn">확인</button>
-        </div>
-    </div>
-
-    <!-- Firebase SDK 모듈 -->
+    <!-- Firebase SDK 모듈 및 메인 앱 스크립트 -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Firebase 설정 (Canvas 제공 글로벌 변수 연동)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'study-quest-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "dummy-key",
-            authDomain: "dummy.firebaseapp.com",
-            projectId: "dummy-project"
+        // ==========================================
+        // ⚙️ Firebase 설정값 (적용 완료)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvpYLrgUCveAmncNZL2CSYf-8G0j45SxA",
+            authDomain: "my-web-971b6.firebaseapp.com",
+            projectId: "my-web-971b6",
+            storageBucket: "my-web-971b6.firebasestorage.app",
+            messagingSenderId: "408730083561",
+            appId: "1:408730083561:web:2142353bc9bc89f58cd078"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // --- 앱 글로벌 상태 ---
-        let currentUser = null;
-        let isSignUpMode = false;
-        let unsubscribeUserSnapshot = null;
-
-        let state = {
-            level: 1,
-            currentExp: 0,
-            maxExp: 100,
-            totalExp: 0,
-            todayMinutes: 0,
-            unlockedCards: [1],
-            streak: 0,
-            lastStudyDate: null,
-            questDate: null,
-            completedSessionsToday: 0,
-            quests: [],
-            mode: 'target',
-            selectedMinutes: 25,
-            secondsLeft: 25 * 60,
-            elapsedSeconds: 0,
-            isRunning: false
-        };
-
-        let timerInterval = null;
-
-        // 카드리스트
-        const cardsData = [
-            { id: 1, name: "병아리 탐구자", icon: "🐣", req: "기본 지급", rarity: "NORMAL", color: "#6b7280", desc: "공부의 세계로 첫발을 내딛은 귀여운 탐구자입니다." },
-            { id: 2, name: "열공의 도서관원", icon: "📚", req: "Lv. 3 달성", rarity: "RARE", color: "#3b82f6", desc: "책의 향기를 좋아하며 집중력이 높아지기 시작했습니다." },
-            { id: 3, name: "불꽃의 마법사", icon: "🔥", req: "Lv. 5 달성", rarity: "EPIC", color: "#8b5cf6", desc: "열정의 불꽃으로 공부에 엄청난 몰입을 발휘합니다." },
-            { id: 4, name: "몰입의 기사", icon: "🛡️", req: "총 100분 달성", rarity: "RARE", color: "#3b82f6", desc: "스마트폰의 유혹으로부터 공부 시간을 완벽히 지켜냅니다." },
-            { id: 5, name: "시간의 지배자", icon: "⏳", req: "총 300분 달성", rarity: "EPIC", color: "#8b5cf6", desc: "시간을 자유자재로 다루며 최고의 효율로 공부합니다." },
-            { id: 6, name: "전설의 학자", icon: "👑", req: "Lv. 10 달성", rarity: "LEGENDARY", color: "#f59e0b", desc: "모든 지식을 통달한 스터디의 신으로 불립니다." }
-        ];
-
-        const questPool = [
-            { id: 'q1', title: "출석 체크! 공부 1회 시작하기", target: 1, type: "session", reward: 20 },
-            { id: 'q2', title: "몰입 모드! 25분 이상 집중하기", target: 25, type: "minutes", reward: 30 },
-            { id: 'q3', title: "오늘 50분 이상 열공 달성", target: 50, type: "minutes", reward: 50 },
-            { id: 'q4', title: "오늘 90분 마라톤 공부 달성", target: 90, type: "minutes", reward: 80 },
-            { id: 'q5', title: "열공 파이터! 2회 세션 완료", target: 2, type: "session", reward: 30 },
-            { id: 'q6', title: "지식 탐험가! 3회 세션 완료", target: 3, type: "session", reward: 50 },
-            { id: 'q7', title: "초집중 플레이어! 4회 세션 완료", target: 4, type: "session", reward: 70 }
-        ];
-
-        const titles = [
-            '초보 탐구자',
-            '집중하는 학생',
-            '열정의 학도',
-            '지식의 스폰지',
-            '몰입의 마법사',
-            '학문의 대가',
-            '전설의 현자'
-        ];
-
-        // --- DOM 요소를 가져오는 유틸리티 ---
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const authCard = document.getElementById('authCard');
-        const mainApp = document.getElementById('mainApp');
-        const authTitle = document.getElementById('authTitle');
-        const authSubtitle = document.getElementById('authSubtitle');
-        const authForm = document.getElementById('authForm');
-        const usernameInput = document.getElementById('usernameInput');
-        const passwordInput = document.getElementById('passwordInput');
-        const authSubmitBtn = document.getElementById('authSubmitBtn');
-        const authToggleText = document.getElementById('authToggleText');
-        const authToggleBtn = document.getElementById('authToggleBtn');
-        const authError = document.getElementById('authError');
-
-        const accountUsername = document.getElementById('accountUsername');
+        // DOM 요소
+        const loginSection = document.getElementById('loginSection');
+        const appSection = document.getElementById('appSection');
+        const btnLoginGoogle = document.getElementById('btnLoginGoogle');
         const btnLogout = document.getElementById('btnLogout');
+        const authErrorBanner = document.getElementById('authErrorBanner');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const userBar = document.getElementById('userBar');
+        const fallbackBanner = document.getElementById('fallbackBanner');
 
-        const streakCount = document.getElementById('streakCount');
-        const streakSubtext = document.getElementById('streakSubtext');
-        const levelBadge = document.getElementById('levelBadge');
-        const charTitle = document.getElementById('charTitle');
-        const charName = document.getElementById('charName');
-        const expText = document.getElementById('expText');
-        const expBarFill = document.getElementById('expBarFill');
-        const avatarContainer = document.getElementById('avatarContainer');
-        const glasses = document.getElementById('glasses');
-        const hat = document.getElementById('hat');
+        const dateTitle = document.getElementById('dateTitle');
+        const progressCount = document.getElementById('progressCount');
+        const progressBarFill = document.getElementById('progressBarFill');
 
-        const modeBtns = document.querySelectorAll('.mode-btn');
-        const timeSelector = document.getElementById('timeSelector');
-        const timeOptions = document.querySelectorAll('.time-option');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const btnStart = document.getElementById('btnStart');
-        const btnReset = document.getElementById('btnReset');
+        const todoForm = document.getElementById('todoForm');
+        const todoInput = document.getElementById('todoInput');
+        const todoList = document.getElementById('todoList');
+        const emptyState = document.getElementById('emptyState');
+        const btnClearCompleted = document.getElementById('btnClearCompleted');
+        const saveIndicator = document.getElementById('saveIndicator');
 
-        const todayTimeEl = document.getElementById('todayTime');
-        const totalExpEl = document.getElementById('totalExp');
-        const questList = document.getElementById('questList');
-        const cardGrid = document.getElementById('cardGrid');
-        const collectionCount = document.getElementById('collectionCount');
+        // 애플리케이션 상태
+        let todos = [];
+        let currentUser = null;
+        let saveTimeout = null;
+        let isLocalMode = false;
 
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalIcon = document.getElementById('modalIcon');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDesc = document.getElementById('modalDesc');
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        let app = null;
+        let auth = null;
+        let db = null;
 
-        // 비밀번호 해시 생성 함수 (간단한 SHA-256 비동기 암호화)
-        async function hashPassword(password) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // 오늘 날짜 문자열
-        function getTodayString() {
+        // --- 1. 한국어 날짜 표시 ---
+        function renderKoreanDate() {
+            const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
             const now = new Date();
             const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const dayName = days[now.getDay()];
+
+            dateTitle.textContent = `${year}년 ${month}월 ${date}일 ${dayName}`;
         }
 
-        function generateDailyQuests(dateStr) {
-            let hash = 0;
-            for (let i = 0; i < dateStr.length; i++) {
-                hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            const shuffled = [...questPool].sort((a, b) => {
-                const valA = Math.sin(hash + a.reward) * 10000;
-                const valB = Math.sin(hash + b.reward) * 10000;
-                return (valA - Math.floor(valA)) - (valB - Math.floor(valB));
-            });
-            return shuffled.slice(0, 3).map(q => ({ ...q, claimed: false }));
-        }
-
-        // --- 초기 Firebase 인증 처리 ---
-        async function initAuth() {
+        // --- 2. Firebase 초기화 및 오류 감지 ---
+        function initFirebase() {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "") {
+                    throw new Error("NO_CONFIG");
                 }
-            } catch (err) {
-                console.error("Auth initialization error:", err);
-            }
-        }
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            loadingOverlay.classList.add('hidden');
-            checkSavedSession();
-        });
-
-        // --- 자동 로그인 체크 ---
-        async function checkSavedSession() {
-            const savedUsername = localStorage.getItem('study_quest_account');
-            if (savedUsername) {
-                await loadUserData(savedUsername);
-            } else {
-                showAuthUI();
-            }
-        }
-
-        function showAuthUI() {
-            authCard.classList.remove('hidden');
-            mainApp.classList.add('hidden');
-        }
-
-        function showMainUI(username) {
-            authCard.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-            accountUsername.textContent = username;
-            charName.textContent = username;
-        }
-
-        // --- 인증 폼 모드 전환 ---
-        authToggleBtn.addEventListener('click', () => {
-            isSignUpMode = !isSignUpMode;
-            authError.style.display = 'none';
-            if (isSignUpMode) {
-                authTitle.textContent = "새 계정 만들기";
-                authSubtitle.textContent = "사용할 닉네임과 비밀번호를 입력하세요.";
-                authSubmitBtn.textContent = "회원가입하기";
-                authToggleText.textContent = "이미 계정이 있으신가요?";
-                authToggleBtn.textContent = "로그인";
-            } else {
-                authTitle.textContent = "열공 퀘스트 시작하기";
-                authSubtitle.textContent = "닉네임과 비밀번호로 로그인하여 클라우드에 저장하세요!";
-                authSubmitBtn.textContent = "로그인";
-                authToggleText.textContent = "계정이 없으신가요?";
-                authToggleBtn.textContent = "회원가입";
-            }
-        });
-
-        // --- 로그인 / 회원가입 처리 ---
-        authForm.addEventListener('submit', async () => {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-
-            if (!username || !password) {
-                showAuthError("닉네임과 비밀번호를 모두 입력해주세요.");
-                return;
-            }
-
-            if (password.length < 4) {
-                showAuthError("비밀번호는 최소 4자리 이상이어야 합니다.");
-                return;
-            }
-
-            authSubmitBtn.disabled = true;
-            authError.style.display = 'none';
-
-            try {
-                if (!auth.currentUser) await signInAnonymously(auth);
-                const passwordHash = await hashPassword(password);
-                const safeUsername = encodeURIComponent(username);
-
-                // 규칙 1 준수: /artifacts/{appId}/public/data/{collectionName}
-                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'userAccounts', safeUsername);
-                const userSnap = await getDoc(userDocRef);
-
-                if (isSignUpMode) {
-                    if (userSnap.exists()) {
-                        showAuthError("이미 존재하는 닉네임입니다. 다른 닉네임을 사용해주세요.");
-                        authSubmitBtn.disabled = false;
-                        return;
-                    }
-
-                    // 새 사용자 초기 데이터 생성
-                    const initialData = {
-                        username: username,
-                        passwordHash: passwordHash,
-                        level: 1,
-                        currentExp: 0,
-                        totalExp: 0,
-                        todayMinutes: 0,
-                        unlockedCards: [1],
-                        streak: 0,
-                        lastStudyDate: null,
-                        questDate: getTodayString(),
-                        completedSessionsToday: 0,
-                        quests: generateDailyQuests(getTodayString()),
-                        createdAt: new Date().toISOString()
-                    };
-
-                    await setDoc(userDocRef, initialData);
-                    localStorage.setItem('study_quest_account', username);
-                    await loadUserData(username);
-                } else {
-                    if (!userSnap.exists()) {
-                        showAuthError("존재하지 않는 닉네임입니다. 회원가입을 먼저 해주세요.");
-                        authSubmitBtn.disabled = false;
-                        return;
-                    }
-
-                    const userData = userSnap.data();
-                    if (userData.passwordHash !== passwordHash) {
-                        showAuthError("비밀번호가 일치하지 않습니다.");
-                        authSubmitBtn.disabled = false;
-                        return;
-                    }
-
-                    localStorage.setItem('study_quest_account', username);
-                    await loadUserData(username);
-                }
-            } catch (err) {
-                console.error("Auth error:", err);
-                showAuthError("처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
-            } finally {
-                authSubmitBtn.disabled = false;
-            }
-        });
-
-        function showAuthError(msg) {
-            authError.textContent = msg;
-            authError.style.display = 'block';
-        }
-
-        // --- 로그아웃 ---
-        btnLogout.addEventListener('click', () => {
-            if (unsubscribeUserSnapshot) {
-                unsubscribeUserSnapshot();
-                unsubscribeUserSnapshot = null;
-            }
-            localStorage.removeItem('study_quest_account');
-            usernameInput.value = '';
-            passwordInput.value = '';
-            showAuthUI();
-        });
-
-        // --- 클라우드 사용자 데이터 불러오기 및 실시간 동기화 ---
-        async function loadUserData(username) {
-            loadingOverlay.classList.remove('hidden');
-            const safeUsername = encodeURIComponent(username);
-            const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'userAccounts', safeUsername);
-
-            if (unsubscribeUserSnapshot) unsubscribeUserSnapshot();
-
-            unsubscribeUserSnapshot = onSnapshot(userDocRef, (docSnap) => {
-                loadingOverlay.classList.add('hidden');
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    applyUserData(data);
-                    showMainUI(username);
-                } else {
-                    localStorage.removeItem('study_quest_account');
-                    showAuthUI();
-                }
-            }, (error) => {
-                console.error("Firestore onSnapshot error:", error);
-                loadingOverlay.classList.add('hidden');
-            });
-        }
-
-        function applyUserData(data) {
-            const todayStr = getTodayString();
-
-            state.level = data.level || 1;
-            state.currentExp = data.currentExp || 0;
-            state.maxExp = calculateMaxExp(state.level);
-            state.totalExp = data.totalExp || 0;
-            state.unlockedCards = data.unlockedCards || [1];
-
-            state.streak = data.streak || 0;
-            state.lastStudyDate = data.lastStudyDate || null;
-            checkStreakReset(todayStr);
-
-            if (data.questDate === todayStr && data.quests && data.quests.length > 0) {
-                state.todayMinutes = data.todayMinutes || 0;
-                state.completedSessionsToday = data.completedSessionsToday || 0;
-                state.quests = data.quests;
-                state.questDate = todayStr;
-            } else {
-                state.todayMinutes = 0;
-                state.completedSessionsToday = 0;
-                state.questDate = todayStr;
-                state.quests = generateDailyQuests(todayStr);
-            }
-
-            updateStreakUI();
-            updateCharacterUI();
-            updateStatsUI();
-            renderQuests();
-            checkCardUnlocks();
-            renderCards();
-            resetTimer();
-        }
-
-        async function saveUserData() {
-            const savedUsername = localStorage.getItem('study_quest_account');
-            if (!savedUsername) return;
-
-            const safeUsername = encodeURIComponent(savedUsername);
-            const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'userAccounts', safeUsername);
-
-            const updatePayload = {
-                level: state.level,
-                currentExp: state.currentExp,
-                totalExp: state.totalExp,
-                todayMinutes: state.todayMinutes,
-                unlockedCards: state.unlockedCards,
-                streak: state.streak,
-                lastStudyDate: state.lastStudyDate,
-                questDate: state.questDate,
-                completedSessionsToday: state.completedSessionsToday,
-                quests: state.quests
-            };
-
-            try {
-                await updateDoc(userDocRef, updatePayload);
-            } catch (err) {
-                console.error("Save data error:", err);
-            }
-        }
-
-        function checkStreakReset(todayStr) {
-            if (!state.lastStudyDate) return;
-            const today = new Date(todayStr);
-            const lastStudy = new Date(state.lastStudyDate);
-            const diffTime = Math.abs(today - lastStudy);
-            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays > 1) {
-                state.streak = 0;
-            }
-        }
-
-        function updateStreakOnStudy() {
-            const todayStr = getTodayString();
-            if (state.lastStudyDate === todayStr) return;
-
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
-
-            if (state.lastStudyDate === yesterdayStr) {
-                state.streak += 1;
-            } else {
-                state.streak = 1;
-            }
-
-            state.lastStudyDate = todayStr;
-            updateStreakUI();
-        }
-
-        function updateStreakUI() {
-            streakCount.textContent = `${state.streak}일 연속 공부 중!`;
-            if (state.streak > 0) {
-                streakSubtext.textContent = `대단해요! 불꽃을 꺼뜨리지 않고 유지 중입니다.`;
-            } else {
-                streakSubtext.textContent = `오늘 공부를 완료하고 첫 불꽃을 피워보세요!`;
-            }
-        }
-
-        function calculateMaxExp(level) {
-            return level * 100;
-        }
-
-        function updateCharacterUI() {
-            levelBadge.textContent = `Lv. ${state.level}`;
-            const titleIndex = Math.min(Math.floor((state.level - 1) / 2), titles.length - 1);
-            charTitle.textContent = titles[titleIndex];
-
-            expText.textContent = `${state.currentExp} / ${state.maxExp} XP`;
-            const percent = Math.min(100, Math.round((state.currentExp / state.maxExp) * 100));
-            expBarFill.style.width = `${percent}%`;
-
-            if (state.level >= 3) {
-                glasses.style.display = 'block';
-            } else {
-                glasses.style.display = 'none';
-            }
-
-            if (state.level >= 5) {
-                hat.setAttribute('fill', '#EAB308');
-            } else {
-                hat.setAttribute('fill', '#4F46E5');
-            }
-        }
-
-        function updateStatsUI() {
-            todayTimeEl.textContent = `${state.todayMinutes}분`;
-            totalExpEl.textContent = `${state.totalExp} XP`;
-        }
-
-        function renderQuests() {
-            questList.innerHTML = '';
-            state.quests.forEach(quest => {
-                let currentVal = 0;
-                if (quest.type === 'session') currentVal = state.completedSessionsToday;
-                if (quest.type === 'minutes') currentVal = state.todayMinutes;
-
-                const isReady = currentVal >= quest.target;
-                const isClaimed = quest.claimed;
-
-                const itemEl = document.createElement('div');
-                itemEl.className = `quest-item ${isClaimed ? 'completed' : ''}`;
-                itemEl.innerHTML = `
-                    <div class="quest-item-info">
-                        <div class="quest-item-title">${quest.title}</div>
-                        <div class="quest-item-progress">${Math.min(currentVal, quest.target)} / ${quest.target} (${quest.reward} XP)</div>
-                    </div>
-                    <button class="quest-claim-btn ${isClaimed ? 'done' : ''}" 
-                            ${(!isReady || isClaimed) ? 'disabled' : ''} 
-                            data-id="${quest.id}">
-                        ${isClaimed ? '완료됨' : (isReady ? '보상 받기' : '진행 중')}
-                    </button>
-                `;
-
-                const btn = itemEl.querySelector('.quest-claim-btn');
-                if (isReady && !isClaimed) {
-                    btn.addEventListener('click', () => claimQuestReward(quest.id));
-                }
-
-                questList.appendChild(itemEl);
-            });
-        }
-
-        async function claimQuestReward(questId) {
-            const quest = state.quests.find(q => q.id === questId);
-            if (!quest || quest.claimed) return;
-
-            quest.claimed = true;
-            state.totalExp += quest.reward;
-            let leveledUp = addExp(quest.reward);
-            let newlyUnlockedCards = checkCardUnlocks();
-
-            await saveUserData();
-            renderQuests();
-            updateStatsUI();
-            renderCards();
-
-            if (newlyUnlockedCards.length > 0) {
-                const card = newlyUnlockedCards[0];
-                showModal('🃏 새 카드 획득!', `[${card.name}] 카드를 수집했습니다!`, card.icon);
-            } else if (leveledUp) {
-                showModal('🎊 레벨 업!', `퀘스트 보상으로 Lv. ${state.level}로 성장했습니다!`, '⭐');
-            } else {
-                showModal('🏆 퀘스트 완료!', `${quest.reward} XP 보상을 획득했습니다!`, '🎁');
-            }
-        }
-
-        function checkCardUnlocks() {
-            let newlyUnlocked = [];
-            cardsData.forEach(card => {
-                if (!state.unlockedCards.includes(card.id)) {
-                    let unlock = false;
-                    if (card.id === 2 && state.level >= 3) unlock = true;
-                    if (card.id === 3 && state.level >= 5) unlock = true;
-                    if (card.id === 4 && state.todayMinutes >= 100) unlock = true;
-                    if (card.id === 5 && state.todayMinutes >= 300) unlock = true;
-                    if (card.id === 6 && state.level >= 10) unlock = true;
-
-                    if (unlock) {
-                        state.unlockedCards.push(card.id);
-                        newlyUnlocked.push(card);
-                    }
-                }
-            });
-            return newlyUnlocked;
-        }
-
-        function renderCards() {
-            cardGrid.innerHTML = '';
-            let unlockedCount = 0;
-
-            cardsData.forEach(card => {
-                const isUnlocked = state.unlockedCards.includes(card.id);
-                if (isUnlocked) unlockedCount++;
-
-                const cardEl = document.createElement('div');
-                cardEl.className = `collect-card ${isUnlocked ? 'unlocked' : 'locked'}`;
-                cardEl.innerHTML = `
-                    <div class="collect-card-icon">${isUnlocked ? card.icon : '🔒'}</div>
-                    <div class="collect-card-name">${card.name}</div>
-                    <div class="collect-card-req">${isUnlocked ? card.rarity : card.req}</div>
-                `;
-
-                cardEl.addEventListener('click', () => {
-                    if (isUnlocked) {
-                        showModal(card.name, `<span class="card-detail-rarity" style="background:${card.color};color:white;">${card.rarity}</span><br>${card.desc}`, card.icon);
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        isLocalMode = false;
+                        showMainApp(user);
+                        await loadTodos();
                     } else {
-                        showModal("잠긴 카드", `해금 조건: ${card.req}`, "🔒");
+                        currentUser = null;
+                        showLoginUI();
                     }
                 });
-
-                cardGrid.appendChild(cardEl);
-            });
-
-            collectionCount.textContent = `${unlockedCount} / ${cardsData.length}`;
+            } catch (err) {
+                console.warn("Firebase initialized in Local Fallback mode:", err.message);
+                switchToLocalMode();
+            }
         }
 
-        function updateTimerDisplay() {
-            let totalSec = state.mode === 'target' ? state.secondsLeft : state.elapsedSeconds;
-            const mins = Math.floor(totalSec / 60);
-            const secs = totalSec % 60;
-            timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        // --- 3. 연습 모드(로컬스토리지 전용) 전환 ---
+        function switchToLocalMode() {
+            isLocalMode = true;
+            fallbackBanner.classList.remove('hidden');
+            userBar.classList.add('hidden');
+            loginSection.classList.add('hidden');
+            appSection.classList.remove('hidden');
+            loadTodosFromLocalStorage();
         }
 
-        function startTimer() {
-            if (state.isRunning) {
-                // 스톱워치 모드이고 일시정지(또는 완료)를 원할 때
-                clearInterval(timerInterval);
-                state.isRunning = false;
-                avatarContainer.classList.remove('studying');
-                
-                if (state.mode === 'stopwatch') {
-                    // 스톱워치는 정지 시 1분 이상 기록이 있으면 정산 진행
-                    if (state.elapsedSeconds >= 60) {
-                        const minutesWorked = Math.floor(state.elapsedSeconds / 60);
-                        completeStudySession(minutesWorked);
-                    } else {
-                        btnStart.textContent = '공부 시작';
-                        showModal('안내', '최소 1분 이상 공부해야 경험치가 정산됩니다!', '⏱️');
-                    }
-                } else {
-                    btnStart.textContent = '계속하기';
-                }
+        // UI 상태 관리
+        function showLoginUI() {
+            loginSection.classList.remove('hidden');
+            appSection.classList.add('hidden');
+            authErrorBanner.style.display = 'none';
+        }
+
+        function showMainApp(user) {
+            loginSection.classList.add('hidden');
+            appSection.classList.remove('hidden');
+            fallbackBanner.classList.add('hidden');
+            userBar.classList.remove('hidden');
+
+            userName.textContent = user.displayName || "사용자";
+            userAvatar.src = user.photoURL || "https://placehold.co/100x100/e2e8f0/64748b?text=User";
+            userAvatar.onerror = () => { userAvatar.src = "https://placehold.co/100x100/e2e8f0/64748b?text=User"; };
+        }
+
+        // --- 4. Google 로그인 처리 ---
+        btnLoginGoogle.addEventListener('click', async () => {
+            if (isLocalMode || !auth) {
+                switchToLocalMode();
                 return;
             }
 
-            state.isRunning = true;
-            btnStart.textContent = state.mode === 'stopwatch' ? '공부 완료 & 정산' : '일시정지';
-            avatarContainer.classList.add('studying');
+            authErrorBanner.style.display = 'none';
+            const provider = new GoogleAuthProvider();
 
-            timerInterval = setInterval(() => {
-                if (state.mode === 'target') {
-                    state.secondsLeft--;
-                    updateTimerDisplay();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (err) {
+                console.error("Google Auth Error:", err);
+                authErrorBanner.textContent = `로그인 오류 [${err.code || 'UNKNOWN'}]: ${err.message}`;
+                authErrorBanner.style.display = 'block';
+            }
+        });
 
-                    if (state.secondsLeft <= 0) {
-                        completeStudySession(state.selectedMinutes);
-                    }
+        // --- 5. 로그아웃 ---
+        btnLogout.addEventListener('click', async () => {
+            if (auth) {
+                await signOut(auth);
+            } else {
+                showLoginUI();
+            }
+        });
+
+        // --- 6. 할 일 목록 불러오기 ---
+        async function loadTodos() {
+            if (isLocalMode || !currentUser) {
+                loadTodosFromLocalStorage();
+                return;
+            }
+
+            try {
+                setSaveIndicator('불러오는 중…', '#64748b');
+                // users/{내 uid}/data/todos 문서
+                const docRef = doc(db, 'users', currentUser.uid, 'data', 'todos');
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists() && docSnap.data().items) {
+                    todos = docSnap.data().items;
                 } else {
-                    state.elapsedSeconds++;
-                    updateTimerDisplay();
+                    todos = [];
                 }
-            }, 1000);
+                renderTodos();
+                setSaveIndicator('● 저장됨', '#10b981');
+            } catch (err) {
+                console.error("Load Firestore Error:", err);
+                switchToLocalMode();
+            }
         }
 
-        function resetTimer() {
-            clearInterval(timerInterval);
-            state.isRunning = false;
-            avatarContainer.classList.remove('studying');
-            btnStart.textContent = '공부 시작';
+        function loadTodosFromLocalStorage() {
+            const saved = localStorage.getItem('today_todos_items');
+            todos = saved ? JSON.parse(saved) : [];
+            renderTodos();
+            setSaveIndicator('● 로컬 저장됨', '#10b981');
+        }
 
-            if (state.mode === 'target') {
-                state.secondsLeft = state.selectedMinutes * 60;
+        // --- 7. 디바운스(0.6초) 자동 저장 ---
+        function triggerAutoSave() {
+            renderTodos();
+            setSaveIndicator('저장 중…', '#f59e0b');
+
+            if (saveTimeout) clearTimeout(saveTimeout);
+
+            saveTimeout = setTimeout(async () => {
+                await saveTodos();
+            }, 600);
+        }
+
+        async function saveTodos() {
+            if (isLocalMode || !currentUser) {
+                localStorage.setItem('today_todos_items', JSON.stringify(todos));
+                setSaveIndicator('● 로컬 저장됨', '#10b981');
+                return;
+            }
+
+            try {
+                // users/{내 uid}/data/todos 문서에 { items: [...] } 저장
+                const docRef = doc(db, 'users', currentUser.uid, 'data', 'todos');
+                await setDoc(docRef, { items: todos });
+                setSaveIndicator('● 저장됨', '#10b981');
+            } catch (err) {
+                console.error("Save Firestore Error:", err);
+                setSaveIndicator('❌ 저장 실패', '#ef4444');
+            }
+        }
+
+        function setSaveIndicator(text, color) {
+            saveIndicator.textContent = text;
+            saveIndicator.style.color = color;
+        }
+
+        // --- 8. UI 랜더링 ---
+        function renderTodos() {
+            todoList.innerHTML = '';
+
+            if (todos.length === 0) {
+                emptyState.classList.remove('hidden');
             } else {
-                state.elapsedSeconds = 0;
-            }
-            updateTimerDisplay();
-        }
-
-        async function completeStudySession(minutes) {
-            clearInterval(timerInterval);
-            state.isRunning = false;
-            avatarContainer.classList.remove('studying');
-            btnStart.textContent = '공부 시작';
-
-            const validMinutes = Math.max(1, Math.floor(Number(minutes) || 1));
-            const gainedExp = validMinutes * 10;
-            state.todayMinutes += validMinutes;
-            state.completedSessionsToday += 1;
-            state.totalExp += gainedExp;
-
-            updateStreakOnStudy();
-            let leveledUp = addExp(gainedExp);
-            let newlyUnlockedCards = checkCardUnlocks();
-
-            await saveUserData();
-            updateStatsUI();
-            renderQuests();
-            renderCards();
-
-            if (state.mode === 'target') {
-                state.secondsLeft = state.selectedMinutes * 60;
-            } else {
-                state.elapsedSeconds = 0;
-            }
-            updateTimerDisplay();
-
-            if (newlyUnlockedCards.length > 0) {
-                const card = newlyUnlockedCards[0];
-                showModal('🃏 새 카드 획득!', `[${card.name}] 카드를 수집했습니다!\n(${card.req})`, card.icon);
-            } else if (leveledUp) {
-                showModal('🎊 레벨 업!', `축하합니다! Lv. ${state.level}로 성장했습니다!\n새로운 칭호: [${charTitle.textContent}]`, '⭐');
-            } else {
-                showModal('공부 성공!', `${validMinutes}분간 집중하여 ${gainedExp} XP를 획득했습니다!`, '🎯');
-            }
-        }
-
-        function addExp(exp) {
-            state.currentExp += exp;
-            let isLevelUp = false;
-
-            while (state.currentExp >= state.maxExp) {
-                state.currentExp -= state.maxExp;
-                state.level++;
-                state.maxExp = calculateMaxExp(state.level);
-                isLevelUp = true;
+                emptyState.classList.add('hidden');
             }
 
-            updateCharacterUI();
-            return isLevelUp;
-        }
+            let completedCount = 0;
 
-        function showModal(title, desc, icon) {
-            modalTitle.textContent = title;
-            modalDesc.innerText = desc;
-            modalIcon.textContent = icon;
-            modalOverlay.classList.add('active');
-        }
+            todos.forEach((todo, index) => {
+                if (todo.completed) completedCount++;
 
-        // --- 이벤트 리스너 ---
-        btnStart.addEventListener('click', startTimer);
-        btnReset.addEventListener('click', resetTimer);
+                const card = document.createElement('div');
+                card.className = `todo-card ${todo.completed ? 'completed' : ''}`;
 
-        modeBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                if (state.isRunning) return;
+                card.innerHTML = `
+                    <div class="todo-left">
+                        <div class="checkbox"></div>
+                        <span class="todo-text"></span>
+                    </div>
+                    <button class="btn-delete" title="삭제">✕</button>
+                `;
 
-                modeBtns.forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
+                card.querySelector('.todo-text').textContent = todo.text;
 
-                state.mode = e.target.dataset.mode;
-                if (state.mode === 'stopwatch') {
-                    timeSelector.style.display = 'none';
-                } else {
-                    timeSelector.style.display = 'flex';
-                }
-                resetTimer();
+                // 토글 (완료/미완료)
+                card.querySelector('.todo-left').addEventListener('click', () => {
+                    todos[index].completed = !todos[index].completed;
+                    triggerAutoSave();
+                });
+
+                // 삭제
+                card.querySelector('.btn-delete').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    todos.splice(index, 1);
+                    triggerAutoSave();
+                });
+
+                todoList.appendChild(card);
             });
-        });
 
-        timeOptions.forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                if (state.isRunning) return;
+            // 상단 카운트 및 프로그레스 바
+            progressCount.textContent = `${completedCount} / ${todos.length}`;
+            const percent = todos.length === 0 ? 0 : Math.round((completedCount / todos.length) * 100);
+            progressBarFill.style.width = `${percent}%`;
 
-                timeOptions.forEach(o => o.classList.remove('active'));
-                e.target.classList.add('active');
+            // 완료한 것 치우기 버튼 표시 제어
+            if (completedCount > 0) {
+                btnClearCompleted.classList.remove('hidden');
+            } else {
+                btnClearCompleted.classList.add('hidden');
+            }
+        }
 
-                state.selectedMinutes = parseInt(e.target.dataset.time);
-                resetTimer();
+        // --- 9. 이벤트 리스너 ---
+        todoForm.addEventListener('submit', () => {
+            const text = todoInput.value.trim();
+            if (!text) return;
+
+            todos.push({
+                id: Date.now(),
+                text: text,
+                completed: false
             });
+
+            todoInput.value = '';
+            triggerAutoSave();
         });
 
-        modalCloseBtn.addEventListener('click', () => {
-            modalOverlay.classList.remove('active');
+        btnClearCompleted.addEventListener('click', () => {
+            todos = todos.filter(t => !t.completed);
+            triggerAutoSave();
         });
 
-        // 앱 초기화
-        initAuth();
+        // 초기화 실행
+        renderKoreanDate();
+        initFirebase();
     </script>
 </body>
 </html>
