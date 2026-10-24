@@ -44,6 +44,142 @@
             gap: 16px;
         }
 
+        /* 계정 상단바 */
+        .account-bar {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+        }
+
+        .btn-logout {
+            background: #f3f4f6;
+            color: var(--text-muted);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #e5e7eb;
+            color: var(--text-main);
+        }
+
+        /* 로그인 모달 */
+        .auth-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .auth-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .auth-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: var(--primary);
+        }
+
+        .auth-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .auth-btn:disabled {
+            background: #a5b4fc;
+            cursor: not-allowed;
+        }
+
+        .auth-toggle {
+            margin-top: 14px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .auth-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 4px;
+        }
+
+        .auth-error {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: none;
+        }
+
         /* 스트릭 배지 헤더 */
         .header-streak-bar {
             background: linear-gradient(135deg, #fef2f2, #fff7ed);
@@ -297,6 +433,27 @@
             gap: 12px;
         }
 
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
         /* 일일 퀘스트 섹션 */
         .quest-card {
             background: var(--card-bg);
@@ -468,22 +625,7 @@
             color: var(--primary);
         }
 
-        /* 카드 상세보기 모달 */
-        .card-detail-img {
-            font-size: 4.5rem;
-            margin: 10px 0;
-        }
-
-        .card-detail-rarity {
-            display: inline-block;
-            font-size: 0.75rem;
-            font-weight: 800;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-        }
-
-        /* 축하 메시지 팝업 모달 */
+        /* 모달 오버레이 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -543,134 +685,199 @@
             color: var(--text-muted);
             padding: 10px 0;
         }
+
+        /* 로딩 스피너 */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            gap: 12px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e7ff;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- 🔥 스트릭 상태 표시 바 -->
-        <div class="header-streak-bar">
-            <div class="streak-info">
-                <div class="streak-fire-icon">🔥</div>
-                <div>
-                    <div class="streak-count-text" id="streakCount">0일 연속 공부 중!</div>
-                    <div class="streak-subtext" id="streakSubtext">오늘 공부를 완료하고 스트릭을 이어가세요!</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 캐릭터 카드 -->
-        <div class="character-card">
-            <div class="level-badge" id="levelBadge">Lv. 1</div>
-            
-            <div class="avatar-container" id="avatarContainer">
-                <!-- SVG 캐릭터 -->
-                <svg class="avatar-svg" id="avatarSvg" viewBox="0 0 100 100">
-                    <!-- 배경 후광 -->
-                    <circle cx="50" cy="50" r="45" fill="#EEF2FF" />
-                    <!-- 모자 (학사모/초보자 캡) -->
-                    <path id="hat" d="M 25 35 L 50 20 L 75 35 L 50 45 Z" fill="#4F46E5" />
-                    <rect id="hatBase" x="38" y="35" width="24" height="8" rx="2" fill="#3730A3" />
-                    <!-- 얼굴 -->
-                    <circle cx="50" cy="55" r="22" fill="#FDE68A" />
-                    <!-- 눈 (표정 dynamic 변경 가능) -->
-                    <circle id="eyeLeft" cx="42" cy="52" r="2.5" fill="#1F2937" />
-                    <circle id="eyeRight" cx="58" cy="52" r="2.5" fill="#1F2937" />
-                    <!-- 볼터치 -->
-                    <circle cx="38" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
-                    <circle cx="62" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
-                    <!-- 입 -->
-                    <path id="mouth" d="M 45 62 Q 50 67 55 62" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round" />
-                    <!-- 안경 (레벨에 따라 고레벨시 추가) -->
-                    <g id="glasses" style="display:none;">
-                        <circle cx="42" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
-                        <circle cx="58" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
-                        <line x1="48" y1="52" x2="52" y2="52" stroke="#1F2937" stroke-width="1.5" />
-                    </g>
-                </svg>
-            </div>
-
-            <div class="char-title" id="charTitle">초보 탐구자</div>
-            <div class="char-name" id="charName">열공이</div>
-
-            <!-- 경험치 바 -->
-            <div class="exp-container">
-                <div class="exp-info">
-                    <span>EXP</span>
-                    <span id="expText">0 / 100</span>
-                </div>
-                <div class="exp-bar-bg">
-                    <div class="exp-bar-fill" id="expBarFill"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 타이머 카드 -->
-        <div class="timer-card">
-            <!-- 모드 선택 -->
-            <div class="timer-modes">
-                <button class="mode-btn active" data-mode="target">목표 타이머</button>
-                <button class="mode-btn" data-mode="stopwatch">스톱워치</button>
-            </div>
-
-            <!-- 목표 시간 선택 버튼 (목표 모드일 때만 유효) -->
-            <div class="time-selector" id="timeSelector">
-                <button class="time-option" data-time="10">10분</button>
-                <button class="time-option active" data-time="25">25분</button>
-                <button class="time-option" data-time="50">50분</button>
-                <button class="time-option" data-time="60">60분</button>
-            </div>
-
-            <!-- 시계 디스플레이 -->
-            <div class="timer-display" id="timerDisplay">25:00</div>
-
-            <!-- 컨트롤 버튼 -->
-            <div class="timer-controls">
-                <button class="btn btn-primary" id="btnStart">공부 시작</button>
-                <button class="btn btn-secondary" id="btnReset">리셋</button>
-            </div>
-        </div>
-
-        <!-- 누적 통계 -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">오늘 공부 시간</div>
-                <div class="stat-value" id="todayTime">0분</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">총 획득 경험치</div>
-                <div class="stat-value" id="totalExp">0 XP</div>
-            </div>
-        </div>
-
-        <!-- 🏆 일일 퀘스트 카드 -->
-        <div class="quest-card">
-            <div class="quest-header">
-                <div class="quest-title">🏆 일일 퀘스트</div>
-                <div class="quest-subtext" style="font-size: 0.75rem; color: var(--text-muted);">매일 자정 리셋</div>
-            </div>
-            <div class="quest-list" id="questList">
-                <!-- 자바스크립트로 동적 생성됩니다 -->
-            </div>
-        </div>
-
-        <!-- 캐릭터 카드 도감 -->
-        <div class="collection-card">
-            <div class="collection-header">
-                <div class="collection-title">🃏 캐릭터 카드 도감</div>
-                <div class="collection-count" id="collectionCount">0 / 6</div>
-            </div>
-            <div class="card-grid" id="cardGrid">
-                <!-- 자바스크립트로 카드가 동적 생성됩니다 -->
-            </div>
-        </div>
-
-        <footer>
-            데이터는 이 브라우저에 자동으로 저장됩니다.
-        </footer>
+    <!-- 초기 로딩 화면 -->
+    <div class="loader-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div>데이터 불러오는 중...</div>
     </div>
 
-    <!-- 결과/레벨업 모달 -->
+    <div class="container">
+        <!-- 🔐 로그인/회원가입 카드 (비로그인 시 표시) -->
+        <div class="auth-card" id="authCard">
+            <div class="auth-title" id="authTitle">열공 퀘스트 시작하기</div>
+            <div class="auth-subtitle" id="authSubtitle">닉네임과 비밀번호로 로그인하여 클라우드에 저장하세요!</div>
+
+            <form class="auth-form" id="authForm" onsubmit="return false;">
+                <div class="input-group">
+                    <label class="input-label" for="usernameInput">닉네임 (아이디)</label>
+                    <input type="text" class="auth-input" id="usernameInput" placeholder="닉네임을 입력하세요" required autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="passwordInput">비밀번호</label>
+                    <input type="password" class="auth-input" id="passwordInput" placeholder="비밀번호를 입력하세요 (6자리 이상)" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="auth-btn" id="authSubmitBtn">로그인</button>
+            </form>
+
+            <div class="auth-error" id="authError"></div>
+
+            <div class="auth-toggle">
+                <span id="authToggleText">계정이 없으신가요?</span>
+                <button type="button" class="auth-toggle-btn" id="authToggleBtn">회원가입</button>
+            </div>
+        </div>
+
+        <!-- 🎮 메인 앱 화면 (로그인 후 표시) -->
+        <div id="mainApp" class="hidden" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- 계정 정보 상단바 -->
+            <div class="account-bar">
+                <div class="account-info">
+                    <span>👤</span>
+                    <span id="accountUsername">열공이</span>
+                </div>
+                <button class="btn-logout" id="btnLogout">로그아웃</button>
+            </div>
+
+            <!-- 🔥 스트릭 상태 표시 바 -->
+            <div class="header-streak-bar">
+                <div class="streak-info">
+                    <div class="streak-fire-icon">🔥</div>
+                    <div>
+                        <div class="streak-count-text" id="streakCount">0일 연속 공부 중!</div>
+                        <div class="streak-subtext" id="streakSubtext">오늘 공부를 완료하고 스트릭을 이어가세요!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 캐릭터 카드 -->
+            <div class="character-card">
+                <div class="level-badge" id="levelBadge">Lv. 1</div>
+                
+                <div class="avatar-container" id="avatarContainer">
+                    <svg class="avatar-svg" id="avatarSvg" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="#EEF2FF" />
+                        <path id="hat" d="M 25 35 L 50 20 L 75 35 L 50 45 Z" fill="#4F46E5" />
+                        <rect id="hatBase" x="38" y="35" width="24" height="8" rx="2" fill="#3730A3" />
+                        <circle cx="50" cy="55" r="22" fill="#FDE68A" />
+                        <circle id="eyeLeft" cx="42" cy="52" r="2.5" fill="#1F2937" />
+                        <circle id="eyeRight" cx="58" cy="52" r="2.5" fill="#1F2937" />
+                        <circle cx="38" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
+                        <circle cx="62" cy="58" r="3" fill="#FCA5A5" opacity="0.6" />
+                        <path id="mouth" d="M 45 62 Q 50 67 55 62" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round" />
+                        <g id="glasses" style="display:none;">
+                            <circle cx="42" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
+                            <circle cx="58" cy="52" r="6" fill="none" stroke="#1F2937" stroke-width="1.5" />
+                            <line x1="48" y1="52" x2="52" y2="52" stroke="#1F2937" stroke-width="1.5" />
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="char-title" id="charTitle">초보 탐구자</div>
+                <div class="char-name" id="charName">열공이</div>
+
+                <!-- 경험치 바 -->
+                <div class="exp-container">
+                    <div class="exp-info">
+                        <span>EXP</span>
+                        <span id="expText">0 / 100</span>
+                    </div>
+                    <div class="exp-bar-bg">
+                        <div class="exp-bar-fill" id="expBarFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 타이머 카드 -->
+            <div class="timer-card">
+                <div class="timer-modes">
+                    <button class="mode-btn active" data-mode="target">목표 타이머</button>
+                    <button class="mode-btn" data-mode="stopwatch">스톱워치</button>
+                </div>
+
+                <div class="time-selector" id="timeSelector">
+                    <button class="time-option" data-time="10">10분</button>
+                    <button class="time-option active" data-time="25">25분</button>
+                    <button class="time-option" data-time="50">50분</button>
+                    <button class="time-option" data-time="60">60분</button>
+                </div>
+
+                <div class="timer-display" id="timerDisplay">25:00</div>
+
+                <div class="timer-controls">
+                    <button class="btn btn-primary" id="btnStart">공부 시작</button>
+                    <button class="btn btn-secondary" id="btnReset">리셋</button>
+                </div>
+            </div>
+
+            <!-- 누적 통계 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">오늘 공부 시간</div>
+                    <div class="stat-value" id="todayTime">0분</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">총 획득 경험치</div>
+                    <div class="stat-value" id="totalExp">0 XP</div>
+                </div>
+            </div>
+
+            <!-- 🏆 일일 퀘스트 카드 -->
+            <div class="quest-card">
+                <div class="quest-header">
+                    <div class="quest-title">🏆 일일 퀘스트</div>
+                    <div class="quest-subtext" style="font-size: 0.75rem; color: var(--text-muted);">매일 자정 리셋</div>
+                </div>
+                <div class="quest-list" id="questList">
+                </div>
+            </div>
+
+            <!-- 캐릭터 카드 도감 -->
+            <div class="collection-card">
+                <div class="collection-header">
+                    <div class="collection-title">🃏 캐릭터 카드 도감</div>
+                    <div class="collection-count" id="collectionCount">0 / 6</div>
+                </div>
+                <div class="card-grid" id="cardGrid">
+                </div>
+            </div>
+
+            <footer>
+                ☁️ 모든 데이터는 클라우드에 안전하게 저장되어 어디서나 로그인하여 이어서 이용할 수 있습니다.
+            </footer>
+        </div>
+    </div>
+
+    <!-- 모달 -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <div class="modal-icon" id="modalIcon">🎉</div>
@@ -680,31 +887,42 @@
         </div>
     </div>
 
-    <script>
-        // --- 상태 관리 ---
+    <!-- Firebase SDK 모듈 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 설정 (Canvas 제공 글로벌 변수 연동)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'study-quest-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "dummy-key",
+            authDomain: "dummy.firebaseapp.com",
+            projectId: "dummy-project"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- 앱 글로벌 상태 ---
+        let currentUser = null;
+        let isSignUpMode = false;
+        let unsubscribeUserSnapshot = null;
+
         let state = {
             level: 1,
             currentExp: 0,
             maxExp: 100,
             totalExp: 0,
             todayMinutes: 0,
-            unlockedCards: [1], // 기본 제공 1번 카드
-            
-            // 스트릭 관련
+            unlockedCards: [1],
             streak: 0,
-            lastStudyDate: null, // 'YYYY-MM-DD'
-            
-            // 일일 퀘스트 상태 (오늘 날짜 및 각 퀘스트 클리어/보상 수령 여부)
+            lastStudyDate: null,
             questDate: null,
             completedSessionsToday: 0,
-            quests: [
-                { id: 1, title: "출석 체크! 공부 1회 시작하기", target: 1, type: "session", reward: 20, claimed: false },
-                { id: 2, title: "오늘 50분 이상 집중하기", target: 50, type: "minutes", reward: 50, claimed: false },
-                { id: 3, title: "열공 파이터! 3회 세션 완료", target: 3, type: "session", reward: 40, claimed: false }
-            ],
-
-            // 타이머 상태
-            mode: 'target', // 'target' 또는 'stopwatch'
+            quests: [],
+            mode: 'target',
             selectedMinutes: 25,
             secondsLeft: 25 * 60,
             elapsedSeconds: 0,
@@ -713,7 +931,7 @@
 
         let timerInterval = null;
 
-        // 수집 가능한 캐릭터 카드 데이터
+        // 카드리스트
         const cardsData = [
             { id: 1, name: "병아리 탐구자", icon: "🐣", req: "기본 지급", rarity: "NORMAL", color: "#6b7280", desc: "공부의 세계로 첫발을 내딛은 귀여운 탐구자입니다." },
             { id: 2, name: "열공의 도서관원", icon: "📚", req: "Lv. 3 달성", rarity: "RARE", color: "#3b82f6", desc: "책의 향기를 좋아하며 집중력이 높아지기 시작했습니다." },
@@ -723,10 +941,45 @@
             { id: 6, name: "전설의 학자", icon: "👑", req: "Lv. 10 달성", rarity: "LEGENDARY", color: "#f59e0b", desc: "모든 지식을 통달한 스터디의 신으로 불립니다." }
         ];
 
-        // --- DOM 요소 ---
+        const questPool = [
+            { id: 'q1', title: "출석 체크! 공부 1회 시작하기", target: 1, type: "session", reward: 20 },
+            { id: 'q2', title: "몰입 모드! 25분 이상 집중하기", target: 25, type: "minutes", reward: 30 },
+            { id: 'q3', title: "오늘 50분 이상 열공 달성", target: 50, type: "minutes", reward: 50 },
+            { id: 'q4', title: "오늘 90분 마라톤 공부 달성", target: 90, type: "minutes", reward: 80 },
+            { id: 'q5', title: "열공 파이터! 2회 세션 완료", target: 2, type: "session", reward: 30 },
+            { id: 'q6', title: "지식 탐험가! 3회 세션 완료", target: 3, type: "session", reward: 50 },
+            { id: 'q7', title: "초집중 플레이어! 4회 세션 완료", target: 4, type: "session", reward: 70 }
+        ];
+
+        const titles = [
+            '초보 탐구자',
+            '집중하는 학생',
+            '열정의 학도',
+            '지식의 스폰지',
+            '몰입의 마법사',
+            '학문의 대가',
+            '전설의 현자'
+        ];
+
+        // --- DOM 요소를 가져오는 유틸리티 ---
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const authCard = document.getElementById('authCard');
+        const mainApp = document.getElementById('mainApp');
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const authForm = document.getElementById('authForm');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authToggleText = document.getElementById('authToggleText');
+        const authToggleBtn = document.getElementById('authToggleBtn');
+        const authError = document.getElementById('authError');
+
+        const accountUsername = document.getElementById('accountUsername');
+        const btnLogout = document.getElementById('btnLogout');
+
         const streakCount = document.getElementById('streakCount');
         const streakSubtext = document.getElementById('streakSubtext');
-        
         const levelBadge = document.getElementById('levelBadge');
         const charTitle = document.getElementById('charTitle');
         const charName = document.getElementById('charName');
@@ -755,18 +1008,16 @@
         const modalDesc = document.getElementById('modalDesc');
         const modalCloseBtn = document.getElementById('modalCloseBtn');
 
-        // 칭호 목록 (레벨별)
-        const titles = [
-            '초보 탐구자',
-            '집중하는 학생',
-            '열정의 학도',
-            '지식의 스폰지',
-            '몰입의 마법사',
-            '학문의 대가',
-            '전설의 현자'
-        ];
+        // 비밀번호 해시 생성 함수 (간단한 SHA-256 비동기 암호화)
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
-        // 오늘의 날짜 구하기 (YYYY-MM-DD)
+        // 오늘 날짜 문자열
         function getTodayString() {
             const now = new Date();
             const year = now.getFullYear();
@@ -775,65 +1026,220 @@
             return `${year}-${month}-${day}`;
         }
 
-        // 전체 퀘스트 풀 (랜덤 3개 선택용)
-        const questPool = [
-            { id: 'q1', title: "출석 체크! 공부 1회 시작하기", target: 1, type: "session", reward: 20 },
-            { id: 'q2', title: "몰입 모드! 25분 이상 집중하기", target: 25, type: "minutes", reward: 30 },
-            { id: 'q3', title: "오늘 50분 이상 열공 달성", target: 50, type: "minutes", reward: 50 },
-            { id: 'q4', title: "오늘 90분 마라톤 공부 달성", target: 90, type: "minutes", reward: 80 },
-            { id: 'q5', title: "열공 파이터! 2회 세션 완료", target: 2, type: "session", reward: 30 },
-            { id: 'q6', title: "지식 탐험가! 3회 세션 완료", target: 3, type: "session", reward: 50 },
-            { id: 'q7', title: "초집중 플레이어! 4회 세션 완료", target: 4, type: "session", reward: 70 }
-        ];
-
-        // 날짜 시드를 활용한 결정론적 랜덤 퀘스트 생성 (같은 날에는 항상 같은 3개 부여)
         function generateDailyQuests(dateStr) {
             let hash = 0;
             for (let i = 0; i < dateStr.length; i++) {
                 hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
             }
-            
             const shuffled = [...questPool].sort((a, b) => {
                 const valA = Math.sin(hash + a.reward) * 10000;
                 const valB = Math.sin(hash + b.reward) * 10000;
                 return (valA - Math.floor(valA)) - (valB - Math.floor(valB));
             });
-
             return shuffled.slice(0, 3).map(q => ({ ...q, claimed: false }));
         }
 
-        // --- 데이터 저장 및 로드 ---
-        function loadData() {
-            const saved = localStorage.getItem('study_quest_data');
+        // --- 초기 Firebase 인증 처리 ---
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth initialization error:", err);
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            loadingOverlay.classList.add('hidden');
+            checkSavedSession();
+        });
+
+        // --- 자동 로그인 체크 ---
+        async function checkSavedSession() {
+            const savedUsername = localStorage.getItem('study_quest_account');
+            if (savedUsername) {
+                await loadUserData(savedUsername);
+            } else {
+                showAuthUI();
+            }
+        }
+
+        function showAuthUI() {
+            authCard.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+        }
+
+        function showMainUI(username) {
+            authCard.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            accountUsername.textContent = username;
+            charName.textContent = username;
+        }
+
+        // --- 인증 폼 모드 전환 ---
+        authToggleBtn.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            authError.style.display = 'none';
+            if (isSignUpMode) {
+                authTitle.textContent = "새 계정 만들기";
+                authSubtitle.textContent = "사용할 닉네임과 비밀번호를 입력하세요.";
+                authSubmitBtn.textContent = "회원가입하기";
+                authToggleText.textContent = "이미 계정이 있으신가요?";
+                authToggleBtn.textContent = "로그인";
+            } else {
+                authTitle.textContent = "열공 퀘스트 시작하기";
+                authSubtitle.textContent = "닉네임과 비밀번호로 로그인하여 클라우드에 저장하세요!";
+                authSubmitBtn.textContent = "로그인";
+                authToggleText.textContent = "계정이 없으신가요?";
+                authToggleBtn.textContent = "회원가입";
+            }
+        });
+
+        // --- 로그인 / 회원가입 처리 ---
+        authForm.addEventListener('submit', async () => {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!username || !password) {
+                showAuthError("닉네임과 비밀번호를 모두 입력해주세요.");
+                return;
+            }
+
+            if (password.length < 4) {
+                showAuthError("비밀번호는 최소 4자리 이상이어야 합니다.");
+                return;
+            }
+
+            authSubmitBtn.disabled = true;
+            authError.style.display = 'none';
+
+            try {
+                if (!auth.currentUser) await signInAnonymously(auth);
+                const passwordHash = await hashPassword(password);
+                const safeUsername = encodeURIComponent(username);
+
+                // 규칙 1 준수: /artifacts/{appId}/public/data/{collectionName}
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'userAccounts', safeUsername);
+                const userSnap = await getDoc(userDocRef);
+
+                if (isSignUpMode) {
+                    if (userSnap.exists()) {
+                        showAuthError("이미 존재하는 닉네임입니다. 다른 닉네임을 사용해주세요.");
+                        authSubmitBtn.disabled = false;
+                        return;
+                    }
+
+                    // 새 사용자 초기 데이터 생성
+                    const initialData = {
+                        username: username,
+                        passwordHash: passwordHash,
+                        level: 1,
+                        currentExp: 0,
+                        totalExp: 0,
+                        todayMinutes: 0,
+                        unlockedCards: [1],
+                        streak: 0,
+                        lastStudyDate: null,
+                        questDate: getTodayString(),
+                        completedSessionsToday: 0,
+                        quests: generateDailyQuests(getTodayString()),
+                        createdAt: new Date().toISOString()
+                    };
+
+                    await setDoc(userDocRef, initialData);
+                    localStorage.setItem('study_quest_account', username);
+                    await loadUserData(username);
+                } else {
+                    if (!userSnap.exists()) {
+                        showAuthError("존재하지 않는 닉네임입니다. 회원가입을 먼저 해주세요.");
+                        authSubmitBtn.disabled = false;
+                        return;
+                    }
+
+                    const userData = userSnap.data();
+                    if (userData.passwordHash !== passwordHash) {
+                        showAuthError("비밀번호가 일치하지 않습니다.");
+                        authSubmitBtn.disabled = false;
+                        return;
+                    }
+
+                    localStorage.setItem('study_quest_account', username);
+                    await loadUserData(username);
+                }
+            } catch (err) {
+                console.error("Auth error:", err);
+                showAuthError("처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+            } finally {
+                authSubmitBtn.disabled = false;
+            }
+        });
+
+        function showAuthError(msg) {
+            authError.textContent = msg;
+            authError.style.display = 'block';
+        }
+
+        // --- 로그아웃 ---
+        btnLogout.addEventListener('click', () => {
+            if (unsubscribeUserSnapshot) {
+                unsubscribeUserSnapshot();
+                unsubscribeUserSnapshot = null;
+            }
+            localStorage.removeItem('study_quest_account');
+            usernameInput.value = '';
+            passwordInput.value = '';
+            showAuthUI();
+        });
+
+        // --- 클라우드 사용자 데이터 불러오기 및 실시간 동기화 ---
+        async function loadUserData(username) {
+            loadingOverlay.classList.remove('hidden');
+            const safeUsername = encodeURIComponent(username);
+            const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'userAccounts', safeUsername);
+
+            if (unsubscribeUserSnapshot) unsubscribeUserSnapshot();
+
+            unsubscribeUserSnapshot = onSnapshot(userDocRef, (docSnap) => {
+                loadingOverlay.classList.add('hidden');
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    applyUserData(data);
+                    showMainUI(username);
+                } else {
+                    localStorage.removeItem('study_quest_account');
+                    showAuthUI();
+                }
+            }, (error) => {
+                console.error("Firestore onSnapshot error:", error);
+                loadingOverlay.classList.add('hidden');
+            });
+        }
+
+        function applyUserData(data) {
             const todayStr = getTodayString();
 
-            if (saved) {
-                const data = JSON.parse(saved);
-                state.level = data.level || 1;
-                state.currentExp = data.currentExp || 0;
-                state.maxExp = calculateMaxExp(state.level);
-                state.totalExp = data.totalExp || 0;
-                state.unlockedCards = data.unlockedCards || [1];
-                
-                // 스트릭 초기화 검사
-                state.streak = data.streak || 0;
-                state.lastStudyDate = data.lastStudyDate || null;
-                checkStreakReset(todayStr);
+            state.level = data.level || 1;
+            state.currentExp = data.currentExp || 0;
+            state.maxExp = calculateMaxExp(state.level);
+            state.totalExp = data.totalExp || 0;
+            state.unlockedCards = data.unlockedCards || [1];
 
-                // 일일 퀘스트 및 하루 공부시간 초기화 처리
-                if (data.questDate === todayStr && data.quests && data.quests.length > 0) {
-                    state.todayMinutes = data.todayMinutes || 0;
-                    state.completedSessionsToday = data.completedSessionsToday || 0;
-                    state.quests = data.quests;
-                    state.questDate = todayStr;
-                } else {
-                    // 날짜가 바뀌었으므로 일일 데이터 리셋 및 랜덤 퀘스트 새로 생성
-                    state.todayMinutes = 0;
-                    state.completedSessionsToday = 0;
-                    state.questDate = todayStr;
-                    state.quests = generateDailyQuests(todayStr);
-                }
+            state.streak = data.streak || 0;
+            state.lastStudyDate = data.lastStudyDate || null;
+            checkStreakReset(todayStr);
+
+            if (data.questDate === todayStr && data.quests && data.quests.length > 0) {
+                state.todayMinutes = data.todayMinutes || 0;
+                state.completedSessionsToday = data.completedSessionsToday || 0;
+                state.quests = data.quests;
+                state.questDate = todayStr;
             } else {
+                state.todayMinutes = 0;
+                state.completedSessionsToday = 0;
                 state.questDate = todayStr;
                 state.quests = generateDailyQuests(todayStr);
             }
@@ -847,8 +1253,14 @@
             resetTimer();
         }
 
-        function saveData() {
-            const dataToSave = {
+        async function saveUserData() {
+            const savedUsername = localStorage.getItem('study_quest_account');
+            if (!savedUsername) return;
+
+            const safeUsername = encodeURIComponent(savedUsername);
+            const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'userAccounts', safeUsername);
+
+            const updatePayload = {
                 level: state.level,
                 currentExp: state.currentExp,
                 totalExp: state.totalExp,
@@ -860,37 +1272,38 @@
                 completedSessionsToday: state.completedSessionsToday,
                 quests: state.quests
             };
-            localStorage.setItem('study_quest_data', JSON.stringify(dataToSave));
+
+            try {
+                await updateDoc(userDocRef, updatePayload);
+            } catch (err) {
+                console.error("Save data error:", err);
+            }
         }
 
-        // 스트릭 초기화 확인 (어제도 오늘도 공부 안했으면 리셋)
         function checkStreakReset(todayStr) {
             if (!state.lastStudyDate) return;
-
             const today = new Date(todayStr);
             const lastStudy = new Date(state.lastStudyDate);
             const diffTime = Math.abs(today - lastStudy);
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-            // 하루 이상 지났으면(2일 이상 차이나면) 스트릭 0으로 초기화
             if (diffDays > 1) {
                 state.streak = 0;
             }
         }
 
-        // 공부 달성 시 스트릭 갱신
         function updateStreakOnStudy() {
             const todayStr = getTodayString();
-            if (state.lastStudyDate === todayStr) return; // 오늘 이미 갱신됨
+            if (state.lastStudyDate === todayStr) return;
 
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
 
             if (state.lastStudyDate === yesterdayStr) {
-                state.streak += 1; // 어제 공부했으면 연속 +1
+                state.streak += 1;
             } else {
-                state.streak = 1; // 연속이 끊겼거나 첫 공부면 1일부터 시작
+                state.streak = 1;
             }
 
             state.lastStudyDate = todayStr;
@@ -906,25 +1319,19 @@
             }
         }
 
-        // 레벨에 따른 필요 경험치 계산
         function calculateMaxExp(level) {
             return level * 100;
         }
 
-        // --- 캐릭터 & UI 업데이트 ---
         function updateCharacterUI() {
             levelBadge.textContent = `Lv. ${state.level}`;
-            
-            // 칭호 결정
             const titleIndex = Math.min(Math.floor((state.level - 1) / 2), titles.length - 1);
             charTitle.textContent = titles[titleIndex];
 
-            // 경험치 바
             expText.textContent = `${state.currentExp} / ${state.maxExp} XP`;
             const percent = Math.min(100, Math.round((state.currentExp / state.maxExp) * 100));
             expBarFill.style.width = `${percent}%`;
 
-            // 레벨 상승 시 캐릭터 외형 변화
             if (state.level >= 3) {
                 glasses.style.display = 'block';
             } else {
@@ -943,10 +1350,8 @@
             totalExpEl.textContent = `${state.totalExp} XP`;
         }
 
-        // --- 🏆 일일 퀘스트 렌더링 및 처리 ---
         function renderQuests() {
             questList.innerHTML = '';
-
             state.quests.forEach(quest => {
                 let currentVal = 0;
                 if (quest.type === 'session') currentVal = state.completedSessionsToday;
@@ -978,7 +1383,7 @@
             });
         }
 
-        function claimQuestReward(questId) {
+        async function claimQuestReward(questId) {
             const quest = state.quests.find(q => q.id === questId);
             if (!quest || quest.claimed) return;
 
@@ -987,7 +1392,7 @@
             let leveledUp = addExp(quest.reward);
             let newlyUnlockedCards = checkCardUnlocks();
 
-            saveData();
+            await saveUserData();
             renderQuests();
             updateStatsUI();
             renderCards();
@@ -1002,10 +1407,8 @@
             }
         }
 
-        // --- 카드 도감 관리 ---
         function checkCardUnlocks() {
             let newlyUnlocked = [];
-
             cardsData.forEach(card => {
                 if (!state.unlockedCards.includes(card.id)) {
                     let unlock = false;
@@ -1021,7 +1424,6 @@
                     }
                 }
             });
-
             return newlyUnlocked;
         }
 
@@ -1062,19 +1464,30 @@
             timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         }
 
-        // --- 타이머 로직 ---
         function startTimer() {
             if (state.isRunning) {
-                // 일시정지
+                // 스톱워치 모드이고 일시정지(또는 완료)를 원할 때
                 clearInterval(timerInterval);
                 state.isRunning = false;
-                btnStart.textContent = '계속하기';
                 avatarContainer.classList.remove('studying');
+                
+                if (state.mode === 'stopwatch') {
+                    // 스톱워치는 정지 시 1분 이상 기록이 있으면 정산 진행
+                    if (state.elapsedSeconds >= 60) {
+                        const minutesWorked = Math.floor(state.elapsedSeconds / 60);
+                        completeStudySession(minutesWorked);
+                    } else {
+                        btnStart.textContent = '공부 시작';
+                        showModal('안내', '최소 1분 이상 공부해야 경험치가 정산됩니다!', '⏱️');
+                    }
+                } else {
+                    btnStart.textContent = '계속하기';
+                }
                 return;
             }
 
             state.isRunning = true;
-            btnStart.textContent = '일시정지';
+            btnStart.textContent = state.mode === 'stopwatch' ? '공부 완료 & 정산' : '일시정지';
             avatarContainer.classList.add('studying');
 
             timerInterval = setInterval(() => {
@@ -1101,27 +1514,18 @@
             if (state.mode === 'target') {
                 state.secondsLeft = state.selectedMinutes * 60;
             } else {
-                if (state.elapsedSeconds >= 60) {
-                    // 정확한 분 수만 계산 (초 단위 버림)
-                    const minutesWorked = Math.floor(state.elapsedSeconds / 60);
-                    completeStudySession(minutesWorked);
-                }
                 state.elapsedSeconds = 0;
             }
             updateTimerDisplay();
         }
 
-        // --- 경험치 획득 및 완료 로직 ---
-        function completeStudySession(minutes) {
+        async function completeStudySession(minutes) {
             clearInterval(timerInterval);
             state.isRunning = false;
             avatarContainer.classList.remove('studying');
             btnStart.textContent = '공부 시작';
 
-            // 입력받은 minutes 값을 정수로 정확하게 변환
             const validMinutes = Math.max(1, Math.floor(Number(minutes) || 1));
-
-            // 분당 10 XP 부여 (예: 1분 = 10 XP, 25분 = 250 XP)
             const gainedExp = validMinutes * 10;
             state.todayMinutes += validMinutes;
             state.completedSessionsToday += 1;
@@ -1131,12 +1535,11 @@
             let leveledUp = addExp(gainedExp);
             let newlyUnlockedCards = checkCardUnlocks();
 
-            saveData();
+            await saveUserData();
             updateStatsUI();
             renderQuests();
             renderCards();
 
-            // 타이머 상태 초기화
             if (state.mode === 'target') {
                 state.secondsLeft = state.selectedMinutes * 60;
             } else {
@@ -1144,7 +1547,6 @@
             }
             updateTimerDisplay();
 
-            // 모달 팝업 표시
             if (newlyUnlockedCards.length > 0) {
                 const card = newlyUnlockedCards[0];
                 showModal('🃏 새 카드 획득!', `[${card.name}] 카드를 수집했습니다!\n(${card.req})`, card.icon);
@@ -1214,8 +1616,8 @@
             modalOverlay.classList.remove('active');
         });
 
-        // 초기화
-        loadData();
+        // 앱 초기화
+        initAuth();
     </script>
 </body>
 </html>
