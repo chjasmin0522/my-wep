@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARCADE PROFILE - 나를 소개합니다</title>
+  <style>
+    /* CSS RESET & RETRO ARCADE BASE STYLES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Courier New', Courier, monospace, sans-serif;
+      background-color: #0b0713;
+      color: #00f0ff;
+      line-height: 1.6;
+      word-break: keep-all;
+      overflow-x: hidden;
+      padding: 1.5rem 0.8rem;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* CRT SCANLINE EFFECT */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%);
+      background-size: 100% 4px;
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    /* MAIN ARCADE CABINET CONTAINER */
+    .arcade-container {
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 1.8rem 1.2rem;
+      background-color: #150e24;
+      border: 4px solid #ff007f;
+      box-shadow: 
+        0 0 20px #ff007f,
+        0 0 35px #00f0ff,
+        inset 0 0 20px rgba(0, 0, 0, 0.9);
+      border-radius: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ARCADE HEADER BAR */
+    .top-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #080510;
+      border: 2px solid #ffe600;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      color: #ffe600;
+      font-weight: bold;
+      text-shadow: 0 0 6px #ffe600;
+      margin-bottom: 1.2rem;
+      border-radius: 6px;
+      box-shadow: inset 0 0 8px rgba(255, 230, 0, 0.2);
+    }
+
+    .badge-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .badge {
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      animation: badgeGlow 1.5s infinite alternate ease-in-out;
+    }
+
+    .badge-1 { background: #ff007f; box-shadow: 0 0 6px #ff007f; }
+    .badge-2 { background: #00f0ff; box-shadow: 0 0 6px #00f0ff; animation-delay: 0.3s; }
+    .badge-3 { background: #ffe600; box-shadow: 0 0 6px #ffe600; animation-delay: 0.6s; }
+    .badge-4 { background: #39ff14; box-shadow: 0 0 6px #39ff14; animation-delay: 0.9s; }
+
+    @keyframes badgeGlow {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      100% { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* NEON ARCADE MARQUEE HEADER */
+    header {
+      background: linear-gradient(180deg, #281745 0%, #150b28 100%);
+      border: 3px solid #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 15px rgba(255, 0, 127, 0.3);
+      border-radius: 12px;
+      padding: 1.4rem 1rem;
+      margin-bottom: 1.8rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* LED BULB STRIP AT THE TOP OF HEADER */
+    .led-strip {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      right: 10px;
+    }
+
+    .led-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ff007f;
+      box-shadow: 0 0 5px #ff007f;
+      animation: ledFlash 0.8s infinite alternate;
+    }
+
+    .led-dot:nth-child(even) {
+      background: #00f0ff;
+      box-shadow: 0 0 5px #00f0ff;
+      animation-delay: 0.4s;
+    }
+
+    @keyframes ledFlash {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    /* MARQUEE TITLE BANNER */
+    .arcade-title-banner {
+      text-align: center;
+      background-color: #090514;
+      border: 2px solid #ff007f;
+      padding: 6px 12px;
+      border-radius: 8px;
+      margin: 10px auto 14px auto;
+      width: fit-content;
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+    }
+
+    .arcade-title-text {
+      font-size: 0.75rem;
+      color: #39ff14;
+      text-shadow: 0 0 6px #39ff14;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    /* TRAINER PROFILE TEXT */
+    .trainer-profile {
+      text-align: center;
+      padding: 1rem 0 0.5rem;
+    }
+
+    .nickname {
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 3px 3px 0px #ff007f, -3px -3px 0px #00f0ff, 0 0 10px #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 0.8rem;
+    }
+
+    .level-tag {
+      font-size: 0.85rem;
+      color: #000;
+      background: #ffe600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      box-shadow: 2px 2px 0px #fff, 0 0 8px #ffe600;
+    }
+
+    .bio {
+      font-size: 0.95rem;
+      color: #ffe600;
+      font-weight: bold;
+      background-color: #080410;
+      padding: 0.85rem;
+      border: 2px dashed #ffe600;
+      display: block;
+      border-radius: 6px;
+      text-shadow: 0 0 5px rgba(255, 230, 0, 0.6);
+      box-shadow: inset 0 0 6px rgba(255, 230, 0, 0.15);
+    }
+
+    /* CARD LIST AREA */
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card {
+      background-color: #231838;
+      border: 3px solid #ffe600;
+      box-shadow: 4px 4px 0px #000;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      border-color: #00f0ff;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #ff007f;
+    }
+
+    .card:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #ff007f;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 230, 0, 0.08);
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #ffe600;
+      text-shadow: 1px 1px 0px #000;
+    }
+
+    .toggle-icon {
+      width: 26px;
+      height: 26px;
+      background-color: #ff007f;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      border-radius: 4px;
+      box-shadow: 2px 2px 0px #00f0ff;
+      transition: transform 0.25s ease, background-color 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .toggle-icon::after {
+      content: '▼';
+    }
+
+    .card-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+      background-color: #0f091a;
+      padding: 0 1.25rem;
+    }
+
+    .card-content-inner {
+      padding: 1.25rem 0;
+    }
+
+    .card-content p {
+      font-size: 0.95rem;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+
+    .card.active {
+      border-color: #00f0ff;
+      box-shadow: 4px 4px 0px #ff007f;
+    }
+
+    .card.active .card-header {
+      background-color: rgba(0, 240, 255, 0.12);
+    }
+
+    .card.active .toggle-icon {
+      background-color: #00f0ff;
+      color: #000;
+      transform: rotate(180deg);
+      box-shadow: -2px -2px 0px #ff007f;
+    }
+
+    .card.active .card-content {
+      max-height: 200px;
+      border-top: 2px dashed #00f0ff;
+    }
+
+    /* FOOTER */
+    .arcade-footer {
+      text-align: center;
+      margin-top: 1.8rem;
+      font-size: 0.85rem;
+      color: #00f0ff;
+      font-weight: bold;
+    }
+
+    .insert-coin {
+      color: #ff007f;
+      margin-top: 6px;
+      animation: blink 0.8s infinite alternate;
+      text-shadow: 0 0 6px #ff007f;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    @media (max-width: 520px) {
+      .arcade-container {
+        padding: 1.2rem 0.8rem;
+      }
+
+      .nickname {
+        font-size: 1.5rem;
+      }
+
+      img.pokemon-sprite {
+        width: 56px;
+        height: 56px;
+      }
+
+      .card-title {
+        font-size: 0.95rem;
+      }
+
+      .card-content p {
+        font-size: 0.85rem;
+      }
+
+      img.mini-sprite {
+        width: 44px;
+        height: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="arcade-container">
+    
+    <!-- TOP STATUS BAR -->
+    <div class="top-status-bar">
+      <span>HIGH SCORE: 99990</span>
+      <div class="badge-icons">
+        <span class="badge badge-1" title="Badge 1"></span>
+        <span class="badge badge-2" title="Badge 2"></span>
+        <span class="badge badge-3" title="Badge 3"></span>
+        <span class="badge badge-4" title="Badge 4"></span>
+      </div>
+      <span>STAGE 01</span>
+    </div>
+
+    <!-- PROFILE HEADER WITH NEON MARQUEE & STAGE -->
+    <header>
+      <!-- LED LIGHT STRIP -->
+      <div class="led-strip">
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+      </div>
+
+      <!-- MARQUEE BANNER -->
+      <div class="arcade-title-banner">
+        <span class="arcade-title-text">★ RETRO BATTLE STAGE ★</span>
+      </div>
+
+      <!-- POKEMON SPRITES STAGE ZONE -->
+      <div class="stage-zone">
+        
+    <!-- PROFILE HEADER WITH NEON MARQUEE -->
+    <header>
+      <!-- LED LIGHT STRIP -->
+      <div class="led-strip">
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+        <span class="led-dot"></span>
+      </div>
+
+      <!-- MARQUEE BANNER -->
+      <div class="arcade-title-banner">
+        <span class="arcade-title-text">★ RETRO ARCADE PROFILE ★</span>
+      </div>
+
+      <!-- TRAINER NICKNAME & BIO -->
+      <div class="trainer-profile">
+        <div class="nickname">
+          ⚡ 하눌 <span class="level-tag">Lv.99</span>
+        </div>
+        <p class="bio">&gt; "바이브 코딩으로 나만의 레트로 세상을 창조하는 중!"</p>
+      </div>
+    </header>
+
+    <!-- ACCORDION CARDS -->
+    <main class="card-list">
+      
+      <!-- CARD 1: LIKE -->
+      <article class="card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">🎮 QUEST 1. 좋아하는 것</h2>
+          </div>
+          <div class="toggle-icon" aria-hidden="true"></div>
+        </div>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <p>땀 흘리는 신나는 운동 & 집에서 가족들과 함께 맛있는 음식을 먹으며 드라마 정주행하기!</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2: INTEREST -->
+      <article class="card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">⚡ QUEST 2. 요즘 관심사</h2>
+          </div>
+          <div class="toggle-icon" aria-hidden="true"></div>
+        </div>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <p>AI와 대화하며 상상하는 아이디어를 서비스와 웹으로 뚝뚝 구현하는 '바이브 코딩'!</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3: GOAL -->
+      <article class="card" onclick="toggleCard(this)">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">🏆 FINAL BOSS. 올해 목표</h2>
+          </div>
+          <div class="toggle-icon" aria-hidden="true"></div>
+        </div>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <p>바이브 코딩 스킬을 마스터하여 나만의 독창적인 레트로 게임 직접 개발해보기!</p>
+          </div>
+        </div>
+      </article>
+
+    </main>
+
+    <!-- FOOTER -->
+    <div class="arcade-footer">
+      <div>© 2026 RETRO ARCADE PROFILE</div>
+      <div class="insert-coin">★ INSERT COIN TO PLAY ★</div>
+    </div>
+
+  </div>
+
+  <script>
+    // ACCORDION TOGGLE FUNCTION
+    function toggleCard(selectedCard) {
+      const allCards = document.querySelectorAll('.card');
+      
+      allCards.forEach(card => {
+        if (card === selectedCard) {
+          card.classList.toggle('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
